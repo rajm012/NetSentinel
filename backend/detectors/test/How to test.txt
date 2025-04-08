@@ -1,0 +1,1 @@
+Move the 2 files sample.pcap and test_detectors.py to backend directory and then run this test file and will have results, this show that our whole detectors folder is running fine.

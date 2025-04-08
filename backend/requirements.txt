@@ -1,0 +1,10 @@
+flask
+flask-cors
+scapy
+pandas
+pyyaml
+python-iptables
+maxminddb
+joblib
+celery
+numpy

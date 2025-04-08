@@ -1,0 +1,11 @@
+backend/__pycache__/
+backend/sniffer/__pycache__/
+backend/sniffer/adapters/__pycache__/
+backend/sniffer/protocols/__pycache__/
+backend/zenv
+backend/detectors/__pycache__/
+backend/detectors/anomaly/__pycache__/
+backend/detectors/behavioral/__pycache__/
+backend/detectors/fingerprinting/__pycache__/
+backend/detectors/threats/__pycache__/
+
