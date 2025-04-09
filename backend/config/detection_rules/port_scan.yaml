@@ -1,0 +1,4 @@
+# config/detection_rules/port_scan.yaml
+port_scan:
+  ports_threshold: 100
+  time_window: 10  # seconds

@@ -1,0 +1,5 @@
+{
+    "check_gratuitous": true,
+    "duplicate_macs_threshold": 2
+  }
+  

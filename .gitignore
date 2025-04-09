@@ -9,4 +9,9 @@ backend/detectors/behavioral/__pycache__/
 backend/detectors/fingerprinting/__pycache__/
 backend/detectors/threats/__pycache__/
 backend/processing/__pycache__/
+backend/api/routes/__pycache__/
+backend/api/__pycache__/
+backend/config/__pycache__/
+backend/utils/__pycache__/
+
 
