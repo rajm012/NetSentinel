@@ -1,53 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { VictoryPie } from 'victory';
+import { useEffect, useState } from "react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-const ProtocolDistribution = () => {
-  const [data, setData] = useState(getInitialData());
+export default function ProtocolDistribution() {
+  const [data, setData] = useState([
+    { protocol: "TCP", count: 40 },
+    { protocol: "UDP", count: 25 },
+    { protocol: "ICMP", count: 15 },
+    { protocol: "DNS", count: 5 },
+  ]);
 
-  // Simulate live updates (replace with API/WebSocket later)
   useEffect(() => {
+    // TODO: Later replace with real stats
     const interval = setInterval(() => {
-      setData(generateRandomProtocolData());
+      setData(prev =>
+        prev.map(entry => ({
+          ...entry,
+          count: Math.floor(Math.random() * 100),
+        }))
+      );
     }, 5000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="bg-white p-4 rounded shadow-md">
-      <h3 className="text-lg font-semibold text-gray-800 mb-2">📊 Protocol Distribution</h3>
-      <VictoryPie
-        data={data}
-        colorScale={["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"]}
-        labels={({ datum }) => `${datum.x}: ${datum.y}%`}
-        style={{
-          labels: { fontSize: 14, fill: "#1f2937" },
-        }}
-      />
+    <div className="bg-white shadow p-4 rounded-xl">
+      <h3 className="text-lg font-semibold mb-2">📈 Protocol Distribution</h3>
+      <ResponsiveContainer width="100%" height={250}>
+        <BarChart data={data}>
+          <XAxis dataKey="protocol" />
+          <YAxis />
+          <Tooltip />
+          <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
-};
-
-const getInitialData = () => [
-  { x: "TCP", y: 40 },
-  { x: "UDP", y: 30 },
-  { x: "ICMP", y: 15 },
-  { x: "HTTP", y: 10 },
-  { x: "Others", y: 5 },
-];
-
-const generateRandomProtocolData = () => {
-  const tcp = Math.floor(Math.random() * 40) + 30;
-  const udp = Math.floor(Math.random() * 20) + 15;
-  const icmp = Math.floor(Math.random() * 15) + 5;
-  const http = Math.floor(Math.random() * 20) + 5;
-  const others = 100 - tcp - udp - icmp - http;
-  return [
-    { x: "TCP", y: tcp },
-    { x: "UDP", y: udp },
-    { x: "ICMP", y: icmp },
-    { x: "HTTP", y: http },
-    { x: "Others", y: others > 0 ? others : 0 },
-  ];
-};
-
-export default ProtocolDistribution;
+}

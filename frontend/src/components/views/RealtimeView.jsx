@@ -1,48 +1,21 @@
-import { useEffect, useState } from 'react';
+import AlertFeed from "../ui/alerts/AlertFeed";
+import ProtocolDistribution from "../ui/charts/ProtocolDistribution";
 
 export default function RealtimeView() {
-  const [packets, setPackets] = useState([]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // TEMP MOCK PACKET (replace with WebSocket/API)
-      setPackets(prev => [
-        {
-          id: Date.now(),
-          srcIP: '192.168.1.10',
-          dstIP: '10.0.0.1',
-          protocol: 'TCP',
-          length: 60,
-        },
-        ...prev.slice(0, 49), // limit to 50 entries
-      ]);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Live Packet Feed</h2>
-      <table className="w-full table-auto text-left border">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="px-4 py-2">Source IP</th>
-            <th className="px-4 py-2">Destination IP</th>
-            <th className="px-4 py-2">Protocol</th>
-            <th className="px-4 py-2">Length</th>
-          </tr>
-        </thead>
-        <tbody>
-          {packets.map((pkt, idx) => (
-            <tr key={pkt.id || idx} className="border-b">
-              <td className="px-4 py-2">{pkt.srcIP}</td>
-              <td className="px-4 py-2">{pkt.dstIP}</td>
-              <td className="px-4 py-2">{pkt.protocol}</td>
-              <td className="px-4 py-2">{pkt.length}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Packet Feed */}
+      <div className="md:col-span-2 bg-white p-4 rounded-xl shadow">
+        <h2 className="text-xl font-bold mb-4">Live Packet Feed</h2>
+        {/* You can place your packet table here */}
+        <p>Packet feed coming soon...</p>
+      </div>
+
+      {/* Alerts and Chart */}
+      <div className="flex flex-col gap-4">
+        <AlertFeed />
+        <ProtocolDistribution />
+      </div>
     </div>
   );
 }
