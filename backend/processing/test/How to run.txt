@@ -1,0 +1,1 @@
+Move this both to the backend directory and also try to put the file called "GeoLite2-City.mmdb" in the resources and then run the test file and you are done.

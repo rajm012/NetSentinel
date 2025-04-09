@@ -8,4 +8,5 @@ backend/detectors/anomaly/__pycache__/
 backend/detectors/behavioral/__pycache__/
 backend/detectors/fingerprinting/__pycache__/
 backend/detectors/threats/__pycache__/
+backend/processing/__pycache__/
 
