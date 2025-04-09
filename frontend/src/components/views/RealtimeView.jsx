@@ -3,6 +3,7 @@ import TrafficFlowChart from '../charts/TrafficFlowChart';
 import ProtocolDistribution from '../charts/ProtocolDistribution';
 import GeoMap from '../charts/GeoMap';
 import CaptureControls from '../controls/CaptureControls';
+import usePacketData from '@/store/hooks/usePacketData';
 
 const RealtimeView = () => {
 
@@ -27,6 +28,7 @@ const RealtimeView = () => {
     // Example:
     // await axios.post('/api/stop-capture');
   };
+  const { protocolCounts, latestPackets, geoData } = usePacketData();
 
   return (  
     <div className="p-6 bg-white shadow rounded-md">
@@ -72,3 +74,4 @@ const RealtimeView = () => {
 };
 
 export default RealtimeView;
+
