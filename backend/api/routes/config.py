@@ -2,8 +2,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import json, yaml, os
 
-from config import thresholds as global_thresholds
-from config.settings import RULE_PATH
+from backend.config import thresholds as global_thresholds
+from backend.config.settings import RULE_PATH
 
 router = APIRouter()
 

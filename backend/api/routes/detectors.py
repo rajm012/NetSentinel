@@ -2,22 +2,22 @@ from fastapi import APIRouter, UploadFile, File, Form
 from scapy.all import rdpcap
 import tempfile
 
-from detectors.anomaly.syn_flood import SynFloodDetector
-from detectors.anomaly.port_scan import detect_port_scan
-from detectors.anomaly.dns_tunneling import detect_dns_tunneling
-from detectors.anomaly.arp_spoof import detect_arp_spoof
+from backend.detectors.anomaly.syn_flood import SynFloodDetector
+from backend.detectors.anomaly.port_scan import detect_port_scan
+from backend.detectors.anomaly.dns_tunneling import detect_dns_tunneling
+from backend.detectors.anomaly.arp_spoof import detect_arp_spoof
 
-from detectors.behavioral.timing import detect_timing_anomaly
-from detectors.behavioral.connection_rate import monitor_conn_rate
-from detectors.behavioral.bandwidth import monitor_bandwidth
+from backend.detectors.behavioral.timing import detect_timing_anomaly
+from backend.detectors.behavioral.connection_rate import monitor_conn_rate
+from backend.detectors.behavioral.bandwidth import monitor_bandwidth
 
-from detectors.fingerprinting.tls import ja3_fingerprint
-from detectors.fingerprinting.http import analyze_http_headers
-from detectors.fingerprinting.device import fingerprint_device
+from backend.detectors.fingerprinting.tls import ja3_fingerprint
+from backend.detectors.fingerprinting.http import analyze_http_headers
+from backend.detectors.fingerprinting.device import fingerprint_device
 
-from detectors.threats.tor import detect_tor_traffic
-from detectors.threats.metasploit import detect_metasploit
-from detectors.threats.cobalt_strike import detect_cobalt_strike
+from backend.detectors.threats.tor import detect_tor_traffic
+from backend.detectors.threats.metasploit import detect_metasploit
+from backend.detectors.threats.cobalt_strike import detect_cobalt_strike
 
 router = APIRouter()
 

@@ -1,77 +1,48 @@
-import React, { useState } from 'react';
-import TrafficFlowChart from '../charts/TrafficFlowChart';
-import ProtocolDistribution from '../charts/ProtocolDistribution';
-import GeoMap from '../charts/GeoMap';
-import CaptureControls from '../controls/CaptureControls';
-import usePacketData from '@/store/hooks/usePacketData';
+import { useEffect, useState } from 'react';
 
-const RealtimeView = () => {
+export default function RealtimeView() {
+  const [packets, setPackets] = useState([]);
 
-  const [isCapturing, setIsCapturing] = useState(false);
-  const [interfaceName, setInterfaceName] = useState('');
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // TEMP MOCK PACKET (replace with WebSocket/API)
+      setPackets(prev => [
+        {
+          id: Date.now(),
+          srcIP: '192.168.1.10',
+          dstIP: '10.0.0.1',
+          protocol: 'TCP',
+          length: 60,
+        },
+        ...prev.slice(0, 49), // limit to 50 entries
+      ]);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const handleStartCapture = async (iface) => {
-    setInterfaceName(iface);
-    setIsCapturing(true);
-    console.log(`🟢 Starting capture on ${iface}`);
-
-    // TODO: Make API call to Flask backend to start sniffing
-    // Example:
-    // await axios.post('/api/start-capture', { interface: iface });
-  };
-
-  const handleStopCapture = async () => {
-    setIsCapturing(false);
-    console.log(`🔴 Stopping capture on ${interfaceName}`);
-
-    // TODO: Make API call to Flask backend to stop sniffing
-    // Example:
-    // await axios.post('/api/stop-capture');
-  };
-  const { protocolCounts, latestPackets, geoData } = usePacketData();
-
-  return (  
-    <div className="p-6 bg-white shadow rounded-md">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">📡 Real-Time Traffic View</h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-blue-50 p-4 rounded-md shadow-sm">
-          <h3 className="text-lg font-medium text-blue-800">Packet Count</h3>
-          <p className="text-2xl text-blue-600 font-bold">0</p>
-        </div>
-
-        <div className="bg-green-50 p-4 rounded-md shadow-sm">
-          <h3 className="text-lg font-medium text-green-800">Detected Threats</h3>
-          <p className="text-2xl text-green-600 font-bold">0</p>
-        </div>
-
-        <div className="bg-yellow-50 p-4 rounded-md shadow-sm">
-          <h3 className="text-lg font-medium text-yellow-800">Protocols Active</h3>
-          <p className="text-2xl text-yellow-600 font-bold">0</p>
-        </div>
-      </div>
-
-      <div className="mt-8">
-        <h3 className="text-xl font-semibold text-gray-700 mb-2">Live Packet Stream</h3>
-        <div className="border border-gray-300 rounded p-4 h-64 overflow-auto bg-gray-50 text-sm text-gray-700">
-          <p>[00:00:00] Waiting for packets...</p>
-        </div>
-      </div>
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <TrafficFlowChart />
-        <ProtocolDistribution />
-      </div>
-      <div className="mt-8">
-        <GeoMap />
-      </div>
-      <CaptureControls
-  isCapturing={isCapturing}
-  onStart={handleStartCapture}
-  onStop={handleStopCapture}
-/>
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Live Packet Feed</h2>
+      <table className="w-full table-auto text-left border">
+        <thead className="bg-gray-200">
+          <tr>
+            <th className="px-4 py-2">Source IP</th>
+            <th className="px-4 py-2">Destination IP</th>
+            <th className="px-4 py-2">Protocol</th>
+            <th className="px-4 py-2">Length</th>
+          </tr>
+        </thead>
+        <tbody>
+          {packets.map((pkt, idx) => (
+            <tr key={pkt.id || idx} className="border-b">
+              <td className="px-4 py-2">{pkt.srcIP}</td>
+              <td className="px-4 py-2">{pkt.dstIP}</td>
+              <td className="px-4 py-2">{pkt.protocol}</td>
+              <td className="px-4 py-2">{pkt.length}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
-
-export default RealtimeView;
-
+}

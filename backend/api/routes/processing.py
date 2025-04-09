@@ -1,10 +1,10 @@
 from fastapi import APIRouter, UploadFile, File, Form
 from pydantic import BaseModel
 from scapy.all import rdpcap
-from processing.statistics import TrafficStats
-from processing.flow_analyzer import FlowAnalyzer
-from processing.normalizer import FeatureNormalizer
-from processing.geoip import lookup, load_geoip_reader
+from backend.processing.statistics import TrafficStats
+from backend.processing.flow_analyzer import FlowAnalyzer
+from backend.processing.normalizer import FeatureNormalizer
+from backend.processing.geoip import lookup, load_geoip_reader
 
 import tempfile
 import json

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, UploadFile, File, Form
 from pydantic import BaseModel
-from sniffer import Sniffer, OfflineAnalyzer
-from sniffer.adapters.pcap_adapter import read_pcap
-from sniffer.adapters.tshark_adapter import parse_with_tshark
+from backend.sniffer import Sniffer, OfflineAnalyzer
+from backend.sniffer.adapters.pcap_adapter import read_pcap
+from backend.sniffer.adapters.tshark_adapter import parse_with_tshark
 
 import tempfile
 import threading
