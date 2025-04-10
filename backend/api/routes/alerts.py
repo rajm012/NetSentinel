@@ -4,21 +4,20 @@ import json
 from fastapi import APIRouter, Body
 from backend.utils.helpers import log_alert, format_timestamp
 from pydantic import BaseModel
+from fastapi.responses import JSONResponse
 
+# alerts_bp = Blueprint("alerts", __name__)
+router = APIRouter()
 
-alerts_bp = Blueprint("alerts", __name__)
-ALERT_FILE = "logs/anomalies.json"
-
-@alerts_bp.route("/", methods=["GET"])
+@router.get("/")
 def get_alerts():
+    from backend.config.settings import ANOMALY_LOG_FILE
     try:
-        with open(ALERT_FILE, 'r') as f:
+        with open(ANOMALY_LOG_FILE, 'r') as f:
             alerts = json.load(f)
         return jsonify(alerts)
     except:
-        return jsonify([])
-
-router = APIRouter()
+        return JSONResponse(content=[])
 
 class ManualAlert(BaseModel):
     type: str

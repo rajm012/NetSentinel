@@ -11,18 +11,18 @@ class ThresholdUpdate(BaseModel):
     key: str
     value: int
 
-@router.get("/config/thresholds")
+@router.get("/thresholds")
 def get_thresholds():
     return global_thresholds.THRESHOLDS
 
-@router.post("/config/thresholds/update")
+@router.post("/thresholds/update")
 def update_threshold(update: ThresholdUpdate):
     if update.key not in global_thresholds.THRESHOLDS:
         raise HTTPException(status_code=404, detail="Threshold key not found.")
     global_thresholds.THRESHOLDS[update.key] = update.value
     return {"message": f"Threshold for {update.key} updated to {update.value}"}
 
-@router.get("/config/rule/{rule_file}")
+@router.get("/rule/{rule_file}")
 def get_rule(rule_file: str):
     full_path_yaml = os.path.join(RULE_PATH, f"{rule_file}.yaml")
     full_path_json = os.path.join(RULE_PATH, f"{rule_file}.json")

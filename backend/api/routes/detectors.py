@@ -23,7 +23,7 @@ router = APIRouter()
 
 # ------------------------ Upload and Detect -----------------------------
 
-@router.post("/detect/anomalies")
+@router.post("/anomalies")
 async def detect_anomalies(file: UploadFile = File(...), syn_threshold: int = Form(100), port_threshold: int = Form(20)):
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         tmp.write(await file.read())
@@ -55,7 +55,7 @@ async def detect_anomalies(file: UploadFile = File(...), syn_threshold: int = Fo
         "arp_spoofing_ips": list(results["arp_spoofing"])
     }
 
-@router.post("/detect/behavior")
+@router.post("/behavior")
 async def detect_behavior(file: UploadFile = File(...), conn_limit: int = Form(100), window: int = Form(10), bw_threshold: float = Form(1e6)):
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         tmp.write(await file.read())
@@ -79,7 +79,7 @@ async def detect_behavior(file: UploadFile = File(...), conn_limit: int = Form(1
         "bandwidth_threshold_exceeded": bw_triggered
     }
 
-@router.post("/detect/fingerprints")
+@router.post("/fingerprints")
 async def detect_fingerprints(file: UploadFile = File(...)):
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         tmp.write(await file.read())
@@ -111,7 +111,7 @@ async def detect_fingerprints(file: UploadFile = File(...)):
         "device_types": list(results["device_types"]),
     }
 
-@router.post("/detect/threats")
+@router.post("/threats")
 async def detect_known_threats(file: UploadFile = File(...)):
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         tmp.write(await file.read())

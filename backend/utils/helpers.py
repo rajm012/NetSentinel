@@ -10,7 +10,7 @@ def format_timestamp(ts=None):
 
 def log_alert(alert):
     """Log security alerts with automatic file/directory creation and dummy data"""
-    from config.settings import ANOMALY_LOG_FILE
+    from backend.config.settings import ANOMALY_LOG_FILE
     
     try:
         # Convert to Path object and ensure directory exists

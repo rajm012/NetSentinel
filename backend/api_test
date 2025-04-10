@@ -1,0 +1,162 @@
+### 1. **Alerts Endpoints** (`/api/alerts`)
+**a. GET Alerts**
+- **URL**: `GET http://localhost:8000/api/alerts/`
+- **Headers**: `Content-Type: application/json`
+- **Test**:
+  - Check response is JSON array
+  - Verify alert structure (should have: type, message, severity, timestamp)
+  ```javascript
+  // Postman Test Script
+  pm.test("Alerts are valid", () => {
+      const jsonData = pm.response.json();
+      pm.expect(jsonData).to.be.an('array');
+      jsonData.forEach(alert => {
+          pm.expect(alert).to.have.keys(['type', 'message', 'severity', 'timestamp']);
+      });
+  });
+  ```
+
+**b. POST Manual Alert**
+- **URL**: `POST http://localhost:8000/api/alerts/manual`
+- **Body** (raw JSON):
+  ```json
+  {
+      "type": "manual",
+      "message": "Test alert from Postman",
+      "severity": "medium"
+  }
+  ```
+- **Test**:
+  - Check status code 200
+  - Verify response contains `{"status": "logged"}`
+
+### 2. **Configuration Endpoints** (`/api/config`)
+**a. Get Thresholds**
+- **URL**: `GET http://localhost:8000/api/config/thresholds`
+- **Test**:
+  - Verify response is key-value pairs
+  ```javascript
+  pm.test("Thresholds exist", () => {
+      const thresholds = pm.response.json();
+      pm.expect(thresholds).to.be.an('object');
+      pm.expect(Object.keys(thresholds).length).to.be.above(0);
+  });
+  ```
+
+**b. Update Threshold**
+- **URL**: `POST http://localhost:8000/api/config/thresholds/update`
+- **Body**:
+  ```json
+  {
+      "key": "SYN_FLOOD",
+      "value": 150
+  }
+  ```
+- **Test**:
+  - Check confirmation message
+  - Verify updated value persists with GET
+
+### 3. **Detection Endpoints** (`/api/detect`)
+**Example: Detect Anomalies**
+- **URL**: `POST http://localhost:8000/api/detect/anomalies`
+- **Body** (`form-data`):
+  ```
+  Key          | Value       | Type
+  -------------------------------------
+  file         | sample.pcap | File
+  syn_threshold| 100         | Text
+  port_threshold| 20         | Text
+  ```
+- **Test**:
+  - Verify response structure:
+  ```javascript
+  pm.test("Valid anomalies response", () => {
+      const res = pm.response.json();
+      pm.expect(res).to.have.keys([
+          'syn_flood_ips',
+          'port_scan_ips',
+          'dns_tunnel_queries',
+          'arp_spoofing_ips'
+      ]);
+      pm.expect(res.syn_flood_ips).to.be.an('array');
+  });
+  ```
+
+### 4. **File Processing Endpoints** (`/api/processing`)
+**Example: Traffic Statistics**
+- **URL**: `POST http://localhost:8000/api/processing/upload-pcap/statistics`
+- **Body** (`form-data`):
+  ```
+  Key  | Value       | Type
+  --------------------------
+  file | sample.pcap | File
+  ```
+- **Test**:
+  ```javascript
+  pm.test("Stats exist", () => {
+      const stats = pm.response.json().stats_summary;
+      pm.expect(stats.total_packets).to.be.a('number');
+      pm.expect(stats.protocol_distribution).to.be.an('object');
+  });
+  ```
+
+### 5. **Sniffer Control** (`/api/sniffer`)
+**Start Live Capture**
+- **URL**: `POST http://localhost:8000/api/sniffer/start-live`
+- **Body**:
+  ```json
+  {
+      "iface": "eth0",
+      "filters": ["tcp port 80"]
+  }
+  ```
+- **Test**:
+  ```javascript
+  pm.test("Sniffer started", () => {
+      pm.response.to.have.status(200);
+      pm.response.json().should.include({
+          "status": "Live sniffing started"
+      });
+  });
+  ```
+
+---
+
+### Suggested Improvements for Better Testability
+
+1. **Add Response Models**
+```python
+# In all routes
+from fastapi.responses import JSONResponse
+
+@router.get("/something")
+async def get_something():
+    return JSONResponse(
+        content=your_data,
+        media_type="application/json",
+        status_code=200
+    )
+```
+
+2. **Enhanced Error Handling**
+```python
+# Add to all file upload endpoints
+@router.post("/upload-endpoint")
+async def upload_file(file: UploadFile = File(...)):
+    if not file.filename.endswith(".pcap"):
+        raise HTTPException(400, "Only PCAP files allowed")
+```
+
+3. **Add Swagger Documentation**
+```python
+# Add response_model and description to endpoints
+@router.post(
+    "/detect/anomalies",
+    response_model=AnomalyResult,
+    description="Detect network anomalies in PCAP file",
+    responses={
+        200: {"content": {"application/json": {}}},
+        415: {"description": "Invalid file type"}
+    }
+)
+```
