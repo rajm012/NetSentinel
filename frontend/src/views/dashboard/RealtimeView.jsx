@@ -174,7 +174,7 @@ const processTrafficData = (newPackets) => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
   <div className="lg:col-span-1">
     <ProtocolDistribution packets={packets} />
   </div>
@@ -186,9 +186,6 @@ const processTrafficData = (newPackets) => {
 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
   <div className="lg:col-span-1">
     <DNSQueryView packets={packets} />
-  </div>
-  <div className="lg:col-span-1">
-    {/* Add TLS/HTTPS analysis component here */}
   </div>
 </div>
 

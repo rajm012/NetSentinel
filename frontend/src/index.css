@@ -6,3 +6,19 @@
 body {
   font-family: 'Inter', sans-serif;
 }
+
+/* Add smooth transitions for the chart */
+.recharts-sector {
+  transition: all 0.5s ease-out;
+}
+
+/* Pulse animation for new data */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.recharts-pie-label-text {
+  animation: pulse 0.5s ease-in-out;
+}
