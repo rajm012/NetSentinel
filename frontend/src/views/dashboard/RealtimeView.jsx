@@ -189,7 +189,7 @@ const processTrafficData = (newPackets) => {
   </div>
 </div>
 
-      <div className="grid grid-cols-1">
+<div className="grid grid-cols-1">
   <GeoMap packets={packets} />
 </div>
       
