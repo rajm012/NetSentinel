@@ -6,6 +6,7 @@ import ProtocolDistribution from '../../components/dashboard/ProtocolDistributio
 import TrafficFlowChart from '../../components/dashboard/TrafficFlowChart';
 import CaptureControls from '../../components/dashboard/CaptureControls';
 import { fetchApi } from '../../utils/api';
+import DNSQueryView from '../../components/dashboard/DNSQueryView';
 
 export default function RealtimeView() {
   const { enqueueSnackbar } = useSnackbar()
@@ -83,45 +84,44 @@ export default function RealtimeView() {
     }
   }
 
-  const processTrafficData = (newPackets) => {
-    // Process protocol distribution
-    const protocolCounts = {}
-    const geoUpdates = []
-    const trafficUpdates = []
+// In RealtimeView.jsx, modify the processTrafficData function:
+const processTrafficData = (newPackets) => {
+  const protocolCounts = {}
+  const geoUpdates = []
+  const trafficUpdates = []
+  
+  newPackets.forEach(pkt => {
+    // Extract ports from the packet (format ":11952")
+    const srcPort = pkt['src_port'] || (typeof pkt.src === 'string' ? pkt.src.replace(':', '') : null)
+    const dstPort = pkt['dst_port'] || (typeof pkt.dst === 'string' ? pkt.dst.replace(':', '') : null)
     
-    newPackets.forEach(pkt => {
-      // Protocol counts
-      const protocol = pkt.protocol || 'unknown'
-      protocolCounts[protocol] = (protocolCounts[protocol] || 0) + 1
-      
-      // GeoIP data
-      if (pkt.src_ip && pkt.src_ip !== '0.0.0.0') {
-        geoUpdates.push({
-          ip: pkt.src_ip,
-          timestamp: pkt.timestamp
-        })
-      }
-      
-      // Traffic data
-      trafficUpdates.push({
-        timestamp: new Date(pkt.timestamp * 1000),
-        bytes: pkt.length || 0,
-        protocol
-      })
+    // Protocol counts
+    const protocol = pkt.protocol || 'unknown'
+    protocolCounts[protocol] = (protocolCounts[protocol] || 0) + 1
+    
+    // Traffic data (use ports since IPs aren't available)
+    trafficUpdates.push({
+      timestamp: new Date(pkt.timestamp * 1000),
+      bytes: pkt.length || 0,
+      protocol,
+      srcPort,
+      dstPort
     })
-    
-    // Update protocol distribution
-    setProtocolData(Object.entries(protocolCounts).map(([name, value]) => ({
-      name,
-      value
-    })))
-    
-    // Update traffic flow
-    setTrafficData(prev => [...trafficUpdates, ...prev].slice(0, 200))
-    
-    // Update geo data (we'll process this in GeoMap component)
-    setGeoData(prev => [...geoUpdates, ...prev].slice(0, 100))
-  }
+  })
+  
+  // Update protocol distribution
+  setProtocolData(Object.entries(protocolCounts).map(([name, value]) => ({
+    name,
+    value
+  })))
+  
+  // Update traffic flow
+  setTrafficData(prev => [...trafficUpdates, ...prev].slice(0, 200))
+  
+  // Can't do GeoIP without IPs, so we'll show port-based info instead
+  setGeoData(prev => [...trafficUpdates, ...prev].slice(0, 100))
+}
+   
 
   const handleStartCapture = async (config) => {
     try {
@@ -175,17 +175,26 @@ export default function RealtimeView() {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-1">
-          <ProtocolDistribution data={protocolData} />
-        </div>
-        <div className="lg:col-span-2">
-          <TrafficFlowChart data={trafficData} />
-        </div>
-      </div>
-      
+  <div className="lg:col-span-1">
+    <ProtocolDistribution packets={packets} />
+  </div>
+  <div className="lg:col-span-2">
+    <TrafficFlowChart packets={packets} />
+  </div>
+</div>
+
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+  <div className="lg:col-span-1">
+    <DNSQueryView packets={packets} />
+  </div>
+  <div className="lg:col-span-1">
+    {/* Add TLS/HTTPS analysis component here */}
+  </div>
+</div>
+
       <div className="grid grid-cols-1">
-        <GeoMap data={geoData} />
-      </div>
+  <GeoMap packets={packets} />
+</div>
       
       <div className="grid grid-cols-1">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
