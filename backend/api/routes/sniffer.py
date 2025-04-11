@@ -1,54 +1,324 @@
-from fastapi import APIRouter, UploadFile, File, Form
+# backend/api/routes/sniffer.py
+from fastapi import APIRouter, UploadFile, File, Form, Query, HTTPException, BackgroundTasks
 from pydantic import BaseModel
-from backend.sniffer import Sniffer, OfflineAnalyzer
-from backend.sniffer.adapters.pcap_adapter import read_pcap
-from backend.sniffer.adapters.tshark_adapter import parse_with_tshark
-
+from typing import List, Optional, Dict, Any
+# from backend.sniffer.adapters.pcap_adapter import read_pcap
 import tempfile
-import threading
+import os, time
+import uuid
 
 router = APIRouter()
 
-# --- Models ---
+# Store active sniffers
+active_sniffers = {}
+
 class SnifferConfig(BaseModel):
     iface: str
-    filters: list[str] = []
+    filters: List[str] = []
+    name: Optional[str] = None
 
-# --- API Endpoints ---
+class SnifferResponse(BaseModel):
+    id: str
+    status: str
+    interface: str
+    filters: List[str]
+    name: Optional[str] = None
+
+class SnifferStatusResponse(BaseModel):
+    id: str
+    running: bool
+    packet_count: int
+    interface: str
+    filters: List[str]
+    name: Optional[str] = None
+
+class SnifferResultsResponse(BaseModel):
+    id: str
+    results: List[Dict[str, Any]]
+    more_available: bool
+    total_count: int
 
 @router.get("/status")
 def sniffer_status():
-    return {"status": "Sniffer module ready", "live": True, "offline": True}
+    """Get the status of the sniffer module"""
+    return {
+        "status": "Sniffer module ready",
+        "live": True,
+        "offline": True,
+        "active_sniffers": len(active_sniffers)
+    }
 
-@router.post("/start-live")
+@router.post("/start-live", response_model=SnifferResponse)
 def start_live_sniffer(config: SnifferConfig):
+    from backend.sniffer import Sniffer
+    """Start a live sniffer with the given configuration"""
+    sniffer_id = str(uuid.uuid4())
     sniffer = Sniffer(iface=config.iface, filters=config.filters)
-    thread = threading.Thread(target=sniffer.start, daemon=True)
-    thread.start()
-    return {"status": "Live sniffing started", "interface": config.iface, "filters": config.filters}
+    
+    if not sniffer.start():
+        raise HTTPException(status_code=400, detail="Failed to start sniffer. It may already be running.")
+    
+    # Store the sniffer instance
+    active_sniffers[sniffer_id] = {
+        "sniffer": sniffer,
+        "config": config.dict(),
+        "id": sniffer_id
+    }
+    
+    return {
+        "id": sniffer_id,
+        "status": "Live sniffing started",
+        "interface": config.iface,
+        "filters": config.filters,
+        "name": config.name
+    }
+
+@router.get("/live/{sniffer_id}/status", response_model=SnifferStatusResponse)
+def get_live_sniffer_status(sniffer_id: str):
+    """Get the status of a specific sniffer"""
+    if sniffer_id not in active_sniffers:
+        raise HTTPException(status_code=404, detail="Sniffer not found")
+    
+    sniffer = active_sniffers[sniffer_id]["sniffer"]
+    config = active_sniffers[sniffer_id]["config"]
+    stats = sniffer.get_stats()
+    
+    return {
+        "id": sniffer_id,
+        "running": stats["running"],
+        "packet_count": stats["packet_count"],
+        "interface": stats["interface"],
+        "filters": stats["filters"],
+        "name": config.get("name")
+    }
+
+# Modify this function in backend/api/routes/sniffer.py
+@router.get("/live/{sniffer_id}/results", response_model=SnifferResultsResponse)
+def get_live_sniffer_results(
+    sniffer_id: str, 
+    limit: int = Query(100, ge=1, le=1000),
+    clear: bool = Query(False),
+    since_timestamp: Optional[float] = Query(None, description="Only return results after this timestamp")
+):
+    """Get the results from a specific sniffer"""
+    if sniffer_id not in active_sniffers:
+        raise HTTPException(status_code=404, detail="Sniffer not found")
+    
+    sniffer = active_sniffers[sniffer_id]["sniffer"]
+    
+    # Modify sniffer.get_results to accept a timestamp parameter
+    results = sniffer.get_results(limit=limit, clear=clear, since_timestamp=since_timestamp)
+    stats = sniffer.get_stats()
+    
+    # Add timestamp to response
+    current_timestamp = time.time()
+    
+    return {
+        "id": sniffer_id,
+        "results": results,
+        "more_available": len(results) == limit,
+        "total_count": stats["packet_count"],
+        "timestamp": current_timestamp
+    }
+
+
+@router.post("/live/{sniffer_id}/stop")
+def stop_live_sniffer(sniffer_id: str):
+    """Stop a specific sniffer"""
+    if sniffer_id not in active_sniffers:
+        raise HTTPException(status_code=404, detail="Sniffer not found")
+    
+    sniffer = active_sniffers[sniffer_id]["sniffer"]
+    if not sniffer.stop():
+        raise HTTPException(status_code=400, detail="Failed to stop sniffer. It may not be running.")
+    
+    # Keep the sniffer in the list to access results
+    return {
+        "id": sniffer_id,
+        "status": "Sniffer stopped",
+        "packet_count": sniffer.get_stats()["packet_count"]
+    }
+
+@router.delete("/live/{sniffer_id}")
+def delete_live_sniffer(sniffer_id: str):
+    """Delete a specific sniffer and its results"""
+    if sniffer_id not in active_sniffers:
+        raise HTTPException(status_code=404, detail="Sniffer not found")
+    
+    sniffer = active_sniffers[sniffer_id]["sniffer"]
+    sniffer.stop()  # Make sure it's stopped
+    
+    # Remove from active sniffers
+    del active_sniffers[sniffer_id]
+    
+    return {
+        "id": sniffer_id,
+        "status": "Sniffer deleted"
+    }
+
+@router.get("/live")
+def list_active_sniffers():
+    """List all active sniffers"""
+    result = []
+    for sniffer_id, data in active_sniffers.items():
+        sniffer = data["sniffer"]
+        config = data["config"]
+        stats = sniffer.get_stats()
+        
+        result.append({
+            "id": sniffer_id,
+            "running": stats["running"],
+            "packet_count": stats["packet_count"],
+            "interface": stats["interface"],
+            "filters": stats["filters"],
+            "name": config.get("name")
+        })
+    
+    return {"sniffers": result, "count": len(result)}
+
+# Store active analyzers for PCAP files
+active_analyzers = {}
 
 @router.post("/analyze-pcap")
-async def analyze_pcap(file: UploadFile = File(...)):
+async def analyze_pcap(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    name: str = Form(None)
+):
+    """Upload and analyze a PCAP file"""
+    # Create a temporary file
+    from backend.sniffer import OfflineAnalyzer
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         contents = await file.read()
         tmp.write(contents)
         tmp_path = tmp.name
-
+    
+    # Create an analyzer ID
+    analyzer_id = str(uuid.uuid4())
+    
+    # Create and store the analyzer
     analyzer = OfflineAnalyzer(tmp_path)
-    analyzer.analyze()
-    return {"status": "PCAP analysis completed", "filename": file.filename}
+    active_analyzers[analyzer_id] = {
+        "analyzer": analyzer,
+        "file_path": tmp_path,
+        "original_filename": file.filename,
+        "name": name or file.filename,
+        "status": "processing"
+    }
+    
+    # Start analysis in background
+    background_tasks.add_task(run_analysis, analyzer_id)
+    
+    return {
+        "id": analyzer_id,
+        "status": "PCAP analysis started",
+        "filename": file.filename,
+        "name": name
+    }
 
-@router.post("/read-pcap")
-async def read_pcap_file(file: UploadFile = File(...)):
-    with tempfile.NamedTemporaryFile(delete=False) as tmp:
-        contents = await file.read()
-        tmp.write(contents)
-        tmp_path = tmp.name
+def run_analysis(analyzer_id):
+    """Run analysis in background"""
+    analyzer = active_analyzers[analyzer_id]["analyzer"]
+    summary = analyzer.analyze()
+    active_analyzers[analyzer_id]["status"] = "completed"
+    active_analyzers[analyzer_id]["summary"] = summary
 
-    packets = read_pcap(tmp_path)
-    return {"packet_count": len(packets)}
+@router.get("/pcap/{analyzer_id}/status")
+def get_pcap_analysis_status(analyzer_id: str):
+    """Get the status of a PCAP analysis"""
+    if analyzer_id not in active_analyzers:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    data = active_analyzers[analyzer_id]
+    
+    return {
+        "id": analyzer_id,
+        "status": data["status"],
+        "filename": data["original_filename"],
+        "name": data["name"]
+    }
+
+@router.get("/pcap/{analyzer_id}/results")
+def get_pcap_analysis_results(
+    analyzer_id: str,
+    limit: int = Query(100, ge=1, le=1000),
+    offset: int = Query(0, ge=0)
+):
+    """Get the results of a PCAP analysis"""
+    if analyzer_id not in active_analyzers:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    data = active_analyzers[analyzer_id]
+    
+    if data["status"] != "completed":
+        raise HTTPException(status_code=400, detail="Analysis not yet completed")
+    
+    analyzer = data["analyzer"]
+    results = analyzer.get_results(limit=limit, offset=offset)
+    
+    return {
+        "id": analyzer_id,
+        "results": results,
+        "more_available": len(results) == limit,
+        "offset": offset,
+        "limit": limit,
+        "total_count": analyzer.packet_count
+    }
+
+@router.get("/pcap/{analyzer_id}/summary")
+def get_pcap_analysis_summary(analyzer_id: str):
+    """Get the summary of a PCAP analysis"""
+    if analyzer_id not in active_analyzers:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    data = active_analyzers[analyzer_id]
+    
+    if data["status"] != "completed":
+        raise HTTPException(status_code=400, detail="Analysis not yet completed")
+    
+    return data["summary"]
+
+@router.delete("/pcap/{analyzer_id}")
+def delete_pcap_analysis(analyzer_id: str):
+    """Delete a PCAP analysis and its results"""
+    if analyzer_id not in active_analyzers:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    data = active_analyzers[analyzer_id]
+    
+    # Delete the temporary file
+    try:
+        if os.path.exists(data["file_path"]):
+            os.unlink(data["file_path"])
+    except Exception:
+        pass
+    
+    # Remove from active analyzers
+    del active_analyzers[analyzer_id]
+    
+    return {
+        "id": analyzer_id,
+        "status": "Analysis deleted"
+    }
 
 @router.post("/tshark")
-def tshark_stub(file_path: str = Form(...)):
-    parse_with_tshark(file_path)
-    return {"status": "TShark parsing stub triggered", "file": file_path}
+async def tshark_parser(file: UploadFile = File(...)):
+    from backend.sniffer.adapters.tshark_adapter import parse_with_tshark
+    """Parse a PCAP file with TShark"""
+    # Create a temporary file
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        contents = await file.read()
+        tmp.write(contents)
+        tmp_path = tmp.name
+    
+    # Parse with TShark
+    results = parse_with_tshark(tmp_path)
+    
+    # Delete the temporary file
+    try:
+        os.unlink(tmp_path)
+    except Exception:
+        pass
+    
+    return results
+
