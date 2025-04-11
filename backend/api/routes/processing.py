@@ -1,28 +1,22 @@
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import APIRouter, UploadFile, File
 from pydantic import BaseModel
 from scapy.all import rdpcap
-from backend.processing.statistics import TrafficStats
-from backend.processing.flow_analyzer import FlowAnalyzer
-from backend.processing.normalizer import FeatureNormalizer
-from backend.processing.geoip import lookup, load_geoip_reader
-
 import tempfile
-import json
 
 router = APIRouter()
 
-# --- Models ---
 class GeoIPInput(BaseModel):
     ip: str
     db_path: str | None = None
 
+
 class NormalizationRequest(BaseModel):
     data: list[list[float]]  # 2D list of floats
 
-# --- Endpoints ---
 
 @router.post("/upload-pcap/statistics")
 async def analyze_traffic_stats(file: UploadFile = File(...)):
+    from backend.processing.statistics import TrafficStats
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         tmp.write(await file.read())
         packets = rdpcap(tmp.name)
@@ -36,6 +30,7 @@ async def analyze_traffic_stats(file: UploadFile = File(...)):
 
 @router.post("/upload-pcap/flows")
 async def analyze_flows(file: UploadFile = File(...)):
+    from backend.processing.flow_analyzer import FlowAnalyzer
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         tmp.write(await file.read())
         packets = rdpcap(tmp.name)
@@ -53,7 +48,7 @@ async def analyze_flows(file: UploadFile = File(...)):
 
 @router.post("/geoip/lookup")
 def geoip_lookup(data: GeoIPInput):
-    # Load DB if custom path provided
+    from backend.processing.geoip import lookup, load_geoip_reader
     if data.db_path:
         load_geoip_reader(data.db_path)
 
@@ -63,13 +58,13 @@ def geoip_lookup(data: GeoIPInput):
 
 @router.post("/normalize/fit-transform")
 def normalize_fit_transform(req: NormalizationRequest):
-    normalizer = FeatureNormalizer()
-    scaled = normalizer.fit_transform(req.data)
+    from backend.processing.normalizer import normalizer_instance
+    scaled = normalizer_instance.fit_transform(req.data)
     return {"normalized": scaled.tolist()}
 
 
 @router.post("/normalize/transform")
 def normalize_transform(req: NormalizationRequest):
-    normalizer = FeatureNormalizer()  # Should be saved/reused in production
-    transformed = normalizer.transform(req.data)
+    from backend.processing.normalizer import normalizer_instance
+    transformed = normalizer_instance.transform(req.data)
     return {"transformed": transformed.tolist()}

@@ -14,4 +14,3 @@ class TrafficStats:
 
     def summary(self):
         return dict(self.stats)
-

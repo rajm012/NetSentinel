@@ -17,4 +17,3 @@ class FlowAnalyzer:
 
     def get_active_flows(self):
         return self.flows
-
