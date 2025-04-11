@@ -1,52 +1,59 @@
-# utils/helpers.py
-import datetime
+# backend/utils/helpers.py
 import json
-import os
 from pathlib import Path
+from datetime import datetime
+from typing import Dict, Any
+import logging
 
-def format_timestamp(ts=None):
+logger = logging.getLogger("smartsniffer")
+
+ANOMALY_LOG_FILE: str = "logs/anomalies.json"
+
+def format_timestamp(ts=None) -> str:
     """Format timestamp (current time if None provided)"""
-    return datetime.datetime.now().isoformat() if ts is None else datetime.datetime.fromtimestamp(ts).isoformat()
+    return datetime.now().isoformat() if ts is None else datetime.fromtimestamp(ts).isoformat()
 
-def log_alert(alert):
-    """Log security alerts with automatic file/directory creation and dummy data"""
-    from backend.config.settings import ANOMALY_LOG_FILE
+def log_alert(alert: Dict[str, Any]) -> bool:
+    """
+    Log security alerts with automatic file/directory creation
     
+    Args:
+        alert: Dictionary containing alert details
+        
+    Returns:
+        bool: True if alert was logged successfully, False otherwise
+    """    
     try:
-        # Convert to Path object and ensure directory exists
         log_path = Path(ANOMALY_LOG_FILE)
         log_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # Initialize with dummy data if file doesn't exist or is empty/corrupt
-        if not log_path.exists() or log_path.stat().st_size == 0:
-            dummy_data = [
-                {
-                    "type": "SAMPLE_ALERT",
-                    "timestamp": format_timestamp(),
-                    "message": "This is a sample alert entry",
-                    "severity": "low"
-                },
-                {
-                    "type": "TEST_ENTRY",
-                    "timestamp": format_timestamp(),
-                    "message": "System initialized",
-                    "severity": "info"
-                }
-            ]
-            with open(log_path, 'w') as f:
-                json.dump(dummy_data, f, indent=4)
-            return  # Skip adding the new alert to dummy data
+        alerts = []
         
-        # Normal operation - read, update, write
-        with open(log_path, 'r+') as f:
+        # Load existing alerts if file exists and is valid
+        if log_path.exists() and log_path.stat().st_size > 0:
             try:
-                data = json.load(f)
-                data.append(alert)
-                f.seek(0)
-                json.dump(data, f, indent=4)
+                with open(log_path, 'r') as f:
+                    alerts = json.load(f)
+                    if not isinstance(alerts, list):
+                        alerts = []
             except json.JSONDecodeError:
-                # If file is corrupted, overwrite with just the new alert
-                json.dump([alert], f, indent=4)
-                
+                alerts = []
+                logger.warning("Alert log file was corrupted - resetting")
+        
+        # Add timestamp if not provided
+        if 'timestamp' not in alert:
+            alert['timestamp'] = format_timestamp()
+            
+        # Add the new alert
+        alerts.append(alert)
+        
+        # Write back to file
+        with open(log_path, 'w') as f:
+            json.dump(alerts, f, indent=4)
+            
+        return True
+        
     except Exception as e:
-        print(f"[ALERT LOGGING ERROR] {str(e)}")
+        logger.error(f"Failed to log alert: {str(e)}", exc_info=True)
+        return False
+    

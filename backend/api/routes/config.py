@@ -7,7 +7,6 @@ import os
 from pathlib import Path
 
 from backend.config import thresholds
-from backend.config.settings import settings as app_settings
 
 router = APIRouter(
     prefix="",
@@ -52,6 +51,7 @@ def update_threshold(update: ThresholdUpdate):
 @router.get("/rules", response_model=List[str])
 def list_available_rules():
     """List all available rule files"""
+    from backend.config.settings import settings as app_settings
     try:
         rule_path = Path(app_settings.RULE_PATH)
         
@@ -90,6 +90,7 @@ def list_available_rules():
 @router.get("/rules/{rule_name}", response_model=RuleFileResponse)
 def get_rule(rule_name: str):
     """Get a specific rule configuration"""
+    from backend.config.settings import settings as app_settings
     rule_path = Path(app_settings.RULE_PATH)
     possible_files = [
         rule_path / f"{rule_name}.yaml",
@@ -125,5 +126,6 @@ def get_rule(rule_name: str):
 @router.get("/settings", response_model=Dict[str, str])
 def get_application_settings():
     """Get current application settings"""
+    from backend.config.settings import settings as app_settings
     return app_settings.dict()
 

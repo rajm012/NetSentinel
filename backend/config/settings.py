@@ -3,10 +3,10 @@ Application configuration settings with validation.
 """
 
 from pathlib import Path
-from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 class AppSettings(BaseSettings):
+    from pydantic import field_validator
     LOG_FILE: str = "logs/sniffer.log"
     DEFAULT_INTERFACE: str = "Wi-Fi"
     PCAP_SAVE_PATH: str = "captures/"

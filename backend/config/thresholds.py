@@ -3,9 +3,10 @@ Threshold configuration for various detection mechanisms.
 """
 
 from typing import Dict, Any
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 
 class ThresholdSettings(BaseModel):
+    from pydantic import field_validator
     PORT_SCAN: int = 100        # More than 100 connections in short time
     ARP_SPOOF: int = 5          # Suspicious ARP replies
     DNS_TUNNELING: int = 10     # Long domains
