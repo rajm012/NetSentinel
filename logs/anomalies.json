@@ -1,0 +1,14 @@
+[
+    {
+        "type": "SAMPLE_ALERT",
+        "timestamp": "2025-04-11T14:41:32.239841",
+        "message": "This is a sample alert entry",
+        "severity": "low"
+    },
+    {
+        "type": "TEST_ENTRY",
+        "timestamp": "2025-04-11T14:41:32.239841",
+        "message": "System initialized",
+        "severity": "info"
+    }
+]

@@ -1,47 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { VictoryChart, VictoryLine, VictoryAxis, VictoryTheme } from 'victory';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const TrafficFlowChart = () => {
-  const [data, setData] = useState(generateInitialData());
-
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setData(prev => {
-        const newPoint = {
-          x: new Date().toLocaleTimeString().slice(3, 8),
-          y: Math.floor(Math.random() * 100) + 1,
-        };
-        return [...prev.slice(-19), newPoint]; // Keep only last 20 points
+export const TrafficFlowChart = () => {
+  // Generate mock data for the last 10 minutes
+  const generateData = () => {
+    const data = [];
+    const now = new Date();
+    
+    for (let i = 9; i >= 0; i--) {
+      const time = new Date(now.getTime() - i * 60000);
+      data.push({
+        time: time.getMinutes() + ':' + time.getSeconds().toString().padStart(2, '0'),
+        incoming: Math.floor(Math.random() * 1000),
+        outgoing: Math.floor(Math.random() * 800),
+        threats: Math.floor(Math.random() * 10)
       });
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
+    }
+    return data;
+  };
+
+  const data = generateData();
 
   return (
-    <div className="bg-white p-4 rounded shadow-md">
-      <h3 className="text-lg font-semibold text-gray-800 mb-2">📈 Network Packet Flow</h3>
-      <VictoryChart theme={VictoryTheme.material} domainPadding={10}>
-        <VictoryAxis dependentAxis tickFormat={(x) => `${x} pkt`} />
-        <VictoryAxis />
-        <VictoryLine
-          data={data}
-          interpolation="natural"
-          style={{
-            data: { stroke: "#4f46e5", strokeWidth: 2 },
-          }}
-        />
-      </VictoryChart>
+    <div className="bg-white rounded-lg shadow p-4 h-64">
+      <h3 className="font-bold text-lg mb-2">Traffic Flow (Last 10 Minutes)</h3>
+      <ResponsiveContainer width="100%" height="90%">
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="time" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="incoming" stroke="#8884d8" activeDot={{ r: 8 }} />
+          <Line type="monotone" dataKey="outgoing" stroke="#82ca9d" />
+          <Line type="monotone" dataKey="threats" stroke="#ff7300" />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 };
-
-const generateInitialData = () => {
-  const time = new Date();
-  return Array.from({ length: 20 }, (_, i) => ({
-    x: new Date(time.getTime() - (19 - i) * 2000).toLocaleTimeString().slice(3, 8),
-    y: Math.floor(Math.random() * 50) + 10,
-  }));
-};
-
-export default TrafficFlowChart;

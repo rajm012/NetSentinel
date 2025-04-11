@@ -1,70 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import {
-  ComposableMap,
-  Geographies,
-  Geography,
-  Marker,
-} from 'react-simple-maps';
+import { useEffect, useRef } from 'react';
 
-// const geoUrl =
-//   'https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json';
+export const GeoMap = () => {
+  const mapRef = useRef(null);
 
-const geoUrl =
-  'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
-
-const GeoMap = () => {
-  const [locations, setLocations] = useState(getRandomLocations());
-
-  // Simulate live update every 5 seconds
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLocations(getRandomLocations());
-    }, 5000);
+    // In a real implementation, you would use a mapping library like Leaflet or Google Maps
+    // This is just a placeholder visualization
+    const canvas = mapRef.current;
+    if (!canvas) return;
 
-    return () => clearInterval(interval);
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw a simple world map representation
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw some random "traffic" points
+    for (let i = 0; i < 15; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const size = 2 + Math.random() * 4;
+      const intensity = Math.random();
+      
+      ctx.fillStyle = `rgba(59, 130, 246, ${intensity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }, []);
 
   return (
-    <div className="bg-white p-4 rounded shadow-md">
-      <h3 className="text-lg font-semibold text-gray-800 mb-2">🗺️ GeoIP Traffic Map</h3>
-      <ComposableMap projectionConfig={{ scale: 140 }}>
-      <Geographies geography={geoUrl}>
-  {({ geographies }) =>
-    geographies.map(geo => (
-      <Geography
-        key={geo.rsmKey}
-        geography={geo}
-        style={{
-          default: { fill: "#e0e0e0", stroke: "#999" },
-          hover: { fill: "#aaa" },
-          pressed: { fill: "#2b6cb0" },
-        }}
+    <div className="relative h-64">
+      <canvas 
+        ref={mapRef} 
+        className="w-full h-full rounded"
+        width={800}
+        height={400}
       />
-    ))
-  }
-</Geographies>
-
-
-        {locations.map((loc, idx) => (
-          <Marker key={idx} coordinates={[loc.lng, loc.lat]}>
-            <circle r={4} fill="#ef4444" stroke="#fff" strokeWidth={1} />
-            <text textAnchor="middle" y={-10} style={{ fontSize: 10 }}>
-              {loc.label}
-            </text>
-          </Marker>
-        ))}
-      </ComposableMap>
+      <div className="absolute bottom-2 left-2 text-sm text-gray-600">
+        Simulated traffic origins (mock data)
+      </div>
     </div>
   );
 };
-
-// Replace with actual GeoIP backend data later
-const getRandomLocations = () => [
-  { lat: 37.7749, lng: -122.4194, label: "USA" },
-  { lat: 51.5074, lng: -0.1278, label: "UK" },
-  { lat: 28.6139, lng: 77.209, label: "India" },
-  { lat: 35.6895, lng: 139.6917, label: "Japan" },
-  { lat: 55.7558, lng: 37.6173, label: "Russia" },
-];
-
-export default GeoMap;
