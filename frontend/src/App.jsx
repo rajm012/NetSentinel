@@ -5,6 +5,7 @@ import DocsPage from "./views/DocsPage";
 import LoginPage from "./views/LoginPage"
 import DashboardLayout from "./components/layouts/DashboardLayout";;
 import "./index.css";
+import RealtimePage from "./components/views/RealtimeView";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
 
       {/* -----------------------dashboard routes------------------------------------ */}
       <Route path="/dashboard" element={<DashboardLayout />}>
+      <Route path="realtime" element={<RealtimePage />} />
       </Route>
 
       </Routes>
