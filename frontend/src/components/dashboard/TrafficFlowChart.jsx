@@ -66,37 +66,59 @@ export default function TrafficFlowChart({ packets }) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4" style={{ height: '400px' }}>
-      <h3 className="text-lg font-semibold mb-4">Protocol Activity (10-Second Intervals)</h3>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3 h-[400px] flex flex-col">
+      <h3 className="text-lg font-semibold mb-2">Protocol Activity</h3>
+      <div className="text-xs text-gray-500 mb-1">10-second intervals</div>
+      
       {chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={chartData}
-            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-            <XAxis 
-              dataKey="time" 
-              // Optional: Prevent overcrowding by showing every 2nd label
-              tick={{ fontSize: 12 }}
-              interval={Math.ceil(chartData.length / 10)} 
-            />
-            <YAxis />
-            <Tooltip 
-              formatter={(value, name) => [`${value} packets`, name]}
-              labelFormatter={(time) => `Time: ${time}`}
-            />
-            <Legend />
-            <Line type="monotone" dataKey="DNS" stroke="#8884d8" strokeWidth={2} dot={false} />
-            <Line type="monotone" dataKey="HTTPS" stroke="#82ca9d" strokeWidth={2} dot={false} />
-            <Line type="monotone" dataKey="TCP" stroke="#ffc658" strokeWidth={2} dot={false} />
-            <Line type="monotone" dataKey="UDP" stroke="#ffbb28" strokeWidth={2} dot={false} />
-            <Line type="monotone" dataKey="HTTP" stroke="#d0ed57" strokeWidth={2} dot={false} />
-            <Line type="monotone" dataKey="Other" stroke="#ff8042" strokeWidth={2} dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
+        <div className="flex-1">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={chartData}
+              margin={{ top: 5, right: 15, left: 0, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#eee" strokeOpacity={0.3} />
+              <XAxis 
+                dataKey="time" 
+                tick={{ fontSize: 10 }}
+                interval={Math.ceil(chartData.length / 6)} 
+                height={20}
+              />
+              <YAxis 
+                width={30}
+                tick={{ fontSize: 10 }}
+              />
+              <Tooltip 
+                formatter={(value, name) => [`${value}`, name]}
+                labelFormatter={(time) => `Time: ${time}`}
+                contentStyle={{
+                  fontSize: '12px',
+                  padding: '5px 8px',
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px'
+                }}
+              />
+              <Legend 
+                wrapperStyle={{
+                  paddingTop: '5px',
+                  fontSize: '12px',
+                }}
+                layout="horizontal"
+                verticalAlign="bottom"
+                height={36}
+              />
+              <Line type="monotone" dataKey="DNS" stroke="#8884d8" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="HTTPS" stroke="#82ca9d" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="TCP" stroke="#ffc658" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="UDP" stroke="#ffbb28" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="HTTP" stroke="#d0ed57" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="Other" stroke="#ff8042" strokeWidth={1.5} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       ) : (
-        <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+        <div className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm">
           {packets.length > 0 ? 'Processing traffic data...' : 'No packet data available'}
         </div>
       )}

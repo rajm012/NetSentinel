@@ -39,35 +39,36 @@ export default function ProtocolDistribution({ packets }) {
   }, [packets])
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 h-[400px]">
       <h3 className="text-lg font-semibold mb-4">Protocol Distribution</h3>
 
       {protocolData.length > 0 ? (
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Pie Chart */}
-<div className="w-full md:w-1/2" style={{ height: '300px' }}>
-  <ResponsiveContainer width="100%" height="100%">
-    <PieChart>
-      <Pie
-        data={protocolData}
-        dataKey="value"
-        nameKey="name"
-        cx="50%"
-        cy="50%"
-        outerRadius={80}
-        fill="#8884d8"
-        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-      >
-        {protocolData.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-        ))}
-      </Pie>
-      <Tooltip />
-      <Legend />
-    </PieChart>
-  </ResponsiveContainer>
-</div>
-
+          <div className="w-full md:w-1/2" style={{ height: '300px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={protocolData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  innerRadius={50}
+                  paddingAngle={5}
+                  fill="#8884d8"
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                >
+                  {protocolData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
           {/* Table */}
           <div className="w-full md:w-1/2 overflow-auto max-h-64">
             <table className="min-w-full text-sm table-auto">

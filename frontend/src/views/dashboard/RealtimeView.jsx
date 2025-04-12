@@ -84,44 +84,35 @@ export default function RealtimeView() {
     }
   }
 
-// In RealtimeView.jsx, modify the processTrafficData function:
-const processTrafficData = (newPackets) => {
-  const protocolCounts = {}
-  const geoUpdates = []
-  const trafficUpdates = []
-  
-  newPackets.forEach(pkt => {
-    // Extract ports from the packet (format ":11952")
-    const srcPort = pkt['src_port'] || (typeof pkt.src === 'string' ? pkt.src.replace(':', '') : null)
-    const dstPort = pkt['dst_port'] || (typeof pkt.dst === 'string' ? pkt.dst.replace(':', '') : null)
+  const processTrafficData = (newPackets) => {
+    const protocolCounts = {}
+    // const geoUpdates = []
+    const trafficUpdates = []
     
-    // Protocol counts
-    const protocol = pkt.protocol || 'unknown'
-    protocolCounts[protocol] = (protocolCounts[protocol] || 0) + 1
-    
-    // Traffic data (use ports since IPs aren't available)
-    trafficUpdates.push({
-      timestamp: new Date(pkt.timestamp * 1000),
-      bytes: pkt.length || 0,
-      protocol,
-      srcPort,
-      dstPort
+    newPackets.forEach(pkt => {
+      const srcPort = pkt['src_port'] || (typeof pkt.src === 'string' ? pkt.src.replace(':', '') : null)
+      const dstPort = pkt['dst_port'] || (typeof pkt.dst === 'string' ? pkt.dst.replace(':', '') : null)
+      
+      const protocol = pkt.protocol || 'unknown'
+      protocolCounts[protocol] = (protocolCounts[protocol] || 0) + 1
+      
+      trafficUpdates.push({
+        timestamp: new Date(pkt.timestamp * 1000),
+        bytes: pkt.length || 0,
+        protocol,
+        srcPort,
+        dstPort
+      })
     })
-  })
-  
-  // Update protocol distribution
-  setProtocolData(Object.entries(protocolCounts).map(([name, value]) => ({
-    name,
-    value
-  })))
-  
-  // Update traffic flow
-  setTrafficData(prev => [...trafficUpdates, ...prev].slice(0, 200))
-  
-  // Can't do GeoIP without IPs, so we'll show port-based info instead
-  setGeoData(prev => [...trafficUpdates, ...prev].slice(0, 100))
-}
-   
+    
+    setProtocolData(Object.entries(protocolCounts).map(([name, value]) => ({
+      name,
+      value
+    })))
+    
+    setTrafficData(prev => [...trafficUpdates, ...prev].slice(0, 200))
+    setGeoData(prev => [...trafficUpdates, ...prev].slice(0, 100))
+  }
 
   const handleStartCapture = async (config) => {
     try {
@@ -159,8 +150,9 @@ const processTrafficData = (newPackets) => {
 
   return (
     <div className="grid grid-cols-1 gap-4 p-4">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
+      {/* Reorganized top section with alerts */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <div className="lg:col-span-3">
           <CaptureControls 
             isCapturing={isCapturing}
             onStart={handleStartCapture}
@@ -169,29 +161,35 @@ const processTrafficData = (newPackets) => {
             onViewModeChange={setViewMode}
           />
         </div>
-        <div>
+        <div className="lg:col-span-1">
           <AlertFeed alerts={alerts} />
         </div>
       </div>
       
-<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-  <div className="lg:col-span-1">
-    <ProtocolDistribution packets={packets} />
-  </div>
-  <div className="lg:col-span-2">
-    <TrafficFlowChart packets={packets} />
-  </div>
-</div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="group hover:lg:col-span-1.5 transition-all duration-300">
+          <ProtocolDistribution packets={packets} />
+        </div>
+        <div className="group hover:lg:col-span-1.5 transition-all duration-300">
+          <TrafficFlowChart packets={packets} />
+        </div>
+      </div>
 
-<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-  <div className="lg:col-span-1">
-    <DNSQueryView packets={packets} />
-  </div>
-</div>
+      {/* DNS Query with enhanced styling */}
+      <div className="grid grid-cols-1">
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow p-4 border border-blue-100 dark:border-gray-600">
+          <DNSQueryView packets={packets} />
+        </div>
+      </div>
 
-<div className="grid grid-cols-1">
-  <GeoMap packets={packets} />
-</div>
+      {/* Enhanced GeoMap with increased height */}
+      <div className="grid grid-cols-1">
+        <div className="h-[700px]">
+          <GeoMap packets={packets} />
+        </div>
+      </div>
+
+      {/* Packet/Flow view with colored rows */}
       <div className="grid grid-cols-1">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
           <h3 className="text-lg font-semibold mb-2">
@@ -211,9 +209,26 @@ const processTrafficData = (newPackets) => {
 }
 
 function PacketTable({ packets }) {
+  // Color mapping for protocols
+  const protocolColors = {
+    tcp: 'bg-blue-50 dark:bg-blue-900',
+    udp: 'bg-green-50 dark:bg-green-900',
+    icmp: 'bg-purple-50 dark:bg-purple-900',
+    http: 'bg-yellow-50 dark:bg-yellow-900',
+    https: 'bg-orange-50 dark:bg-orange-900',
+    dns: 'bg-pink-50 dark:bg-pink-900',
+    default: 'bg-gray-50 dark:bg-gray-700'
+  }
+
+  const getProtocolColor = (protocol) => {
+    if (!protocol) return protocolColors.default
+    const proto = protocol.toLowerCase()
+    return protocolColors[proto] || protocolColors.default
+  }
+
   return (
     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-      <thead className="bg-gray-50 dark:bg-gray-700">
+      <thead className="bg-gray-100 dark:bg-gray-700">
         <tr>
           <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Time</th>
           <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Source</th>
@@ -225,7 +240,10 @@ function PacketTable({ packets }) {
       </thead>
       <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
         {packets.map((pkt, i) => (
-          <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <tr 
+            key={i} 
+            className={`${getProtocolColor(pkt.protocol)} hover:opacity-80 transition-opacity`}
+          >
             <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
               {new Date(pkt.timestamp * 1000).toLocaleTimeString()}
             </td>
@@ -235,7 +253,7 @@ function PacketTable({ packets }) {
             <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
               {pkt.dst_ip}:{pkt.dst_port}
             </td>
-            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+            <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
               {pkt.protocol}
             </td>
             <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
@@ -252,7 +270,7 @@ function PacketTable({ packets }) {
 }
 
 function FlowView({ packets }) {
-  // Group packets by flow (src_ip:src_port -> dst_ip:dst_port)
+  // Group packets by flow
   const flows = packets.reduce((acc, pkt) => {
     const flowKey = `${pkt.src_ip}:${pkt.src_port}-${pkt.dst_ip}:${pkt.dst_port}`
     if (!acc[flowKey]) {
@@ -273,9 +291,23 @@ function FlowView({ packets }) {
 
   const flowList = Object.values(flows).sort((a, b) => b.count - a.count)
 
+  // Color mapping for flows
+  const flowColors = {
+    tcp: 'bg-blue-100 dark:bg-blue-800',
+    udp: 'bg-green-100 dark:bg-green-800',
+    icmp: 'bg-purple-100 dark:bg-purple-800',
+    default: 'bg-gray-100 dark:bg-gray-700'
+  }
+
+  const getFlowColor = (protocol) => {
+    if (!protocol) return flowColors.default
+    const proto = protocol.toLowerCase()
+    return flowColors[proto] || flowColors.default
+  }
+
   return (
     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-      <thead className="bg-gray-50 dark:bg-gray-700">
+      <thead className="bg-gray-100 dark:bg-gray-700">
         <tr>
           <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Source</th>
           <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Destination</th>
@@ -287,14 +319,17 @@ function FlowView({ packets }) {
       </thead>
       <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
         {flowList.map((flow, i) => (
-          <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <tr 
+            key={i} 
+            className={`${getFlowColor(flow.protocol)} hover:opacity-80 transition-opacity`}
+          >
             <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
               {flow.src}
             </td>
             <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
               {flow.dst}
             </td>
-            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+            <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
               {flow.protocol}
             </td>
             <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">

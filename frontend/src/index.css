@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles if needed */
-body {
-  font-family: 'Inter', sans-serif;
-}
 
 /* Add smooth transitions for the chart */
 .recharts-sector {

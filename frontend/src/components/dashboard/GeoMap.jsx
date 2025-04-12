@@ -20,6 +20,15 @@ const isValidIP = (ip) => {
 
 const geoUrl = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
 
+// Default locations to show when no data is available
+const DEFAULT_LOCATIONS = [
+  { longitude: -74.006, latitude: 40.7128, count: 5, country: 'United States' },
+  { longitude: -0.1278, latitude: 51.5074, count: 4, country: 'United Kingdom' }, 
+  { longitude: 139.6917, latitude: 35.6895, count: 3, country: 'Japan' },
+  { longitude: 2.3522, latitude: 48.8566, count: 2, country: 'France' },
+  { longitude: 151.2093, latitude: -33.8688, count: 1, country: 'Australia' }
+]
+
 export default function GeoMap({ packets = [], userSelectedIPs = [] }) {
   const [mapData, setMapData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -31,11 +40,18 @@ export default function GeoMap({ packets = [], userSelectedIPs = [] }) {
 
   const processGeoData = useCallback(async (ipsToProcess, isUserSelection = false) => {
     if (!ipsToProcess || ipsToProcess.length === 0) {
-      setMapData([])
-      setGeoData([])
+      // When no IPs, use default locations but mark them as demo data
+      setMapData(DEFAULT_LOCATIONS.map(loc => ({
+        country: loc.country,
+        count: loc.count,
+        percentage: ((loc.count / 15) * 100).toFixed(1) + '%',
+        isDemo: true
+      })))
+      setGeoData(DEFAULT_LOCATIONS)
       setDebugInfo(prev => ({
         ...prev,
-        message: isUserSelection ? "No IPs selected by user" : "No packets received"
+        message: isUserSelection ? "No IPs selected by user" : "No packets received",
+        isDemoData: true
       }))
       return
     }
@@ -44,7 +60,6 @@ export default function GeoMap({ packets = [], userSelectedIPs = [] }) {
     setError(null)
 
     try {
-      // Extract and validate IPs
       const validIPs = ipsToProcess.filter(ip => isValidIP(ip))
 
       setDebugInfo(prev => ({
@@ -52,15 +67,22 @@ export default function GeoMap({ packets = [], userSelectedIPs = [] }) {
         totalIPs: ipsToProcess.length,
         validIPsFound: validIPs.length,
         sampleIPs: validIPs.slice(0, 5),
-        source: isUserSelection ? 'user' : 'system'
+        source: isUserSelection ? 'user' : 'system',
+        isDemoData: false
       }))
 
       if (validIPs.length === 0) {
-        setMapData([])
-        setGeoData([])
+        setMapData(DEFAULT_LOCATIONS.map(loc => ({
+          country: loc.country,
+          count: loc.count,
+          percentage: ((loc.count / 15) * 100).toFixed(1) + '%',
+          isDemo: true
+        })))
+        setGeoData(DEFAULT_LOCATIONS)
         setDebugInfo(prev => ({
           ...prev,
-          warning: "No valid public IPs found"
+          warning: "No valid public IPs found",
+          isDemoData: true
         }))
         return
       }
@@ -106,7 +128,8 @@ export default function GeoMap({ packets = [], userSelectedIPs = [] }) {
           countryCoordinates[country] = {
             longitude: result.geoip_result.location.longitude,
             latitude: result.geoip_result.location.latitude,
-            count: countryCounts[country]
+            count: countryCounts[country],
+            isDemo: false
           }
         }
       })
@@ -116,7 +139,8 @@ export default function GeoMap({ packets = [], userSelectedIPs = [] }) {
         .map(([country, count]) => ({
           country,
           count,
-          percentage: ((count / validIPs.length) * 100).toFixed(1) + '%'
+          percentage: ((count / validIPs.length) * 100).toFixed(1) + '%',
+          isDemo: false
         }))
         .sort((a, b) => b.count - a.count)
 
@@ -128,7 +152,8 @@ export default function GeoMap({ packets = [], userSelectedIPs = [] }) {
       setDebugInfo(prev => ({
         ...prev,
         countriesFound: formattedData.length,
-        sampleCountries: formattedData.slice(0, 3)
+        sampleCountries: formattedData.slice(0, 3),
+        isDemoData: false
       }))
 
     } catch (err) {
@@ -155,14 +180,14 @@ export default function GeoMap({ packets = [], userSelectedIPs = [] }) {
   }, [packets, userSelectedIPs, displayMode, processGeoData])
 
   // Create a color scale based on the counts
-  const maxCount = geoData.length > 0 ? Math.max(...geoData.map(d => d.count)) : 0
+  const maxCount = geoData.length > 0 ? Math.max(...geoData.map(d => d.count)) : 5
   const colorScale = scaleLinear()
     .domain([0, maxCount || 1])
     .range(["#ffedea", "#ff5233"])
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 h-96">
-      <div className="flex justify-between items-center mb-4">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 h-[700px] flex flex-col">
+      <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-semibold">Traffic Origins</h3>
         <div className="flex space-x-2">
           <button 
@@ -186,21 +211,21 @@ export default function GeoMap({ packets = [], userSelectedIPs = [] }) {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-full">
+        <div className="flex items-center justify-center flex-1">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
       ) : error ? (
-        <div className="flex items-center justify-center h-full text-red-500">
+        <div className="flex items-center justify-center flex-1 text-red-500">
           {error}
         </div>
       ) : (
-        <div className="h-full w-full flex flex-col">
-          {/* Always show the map */}
-          <div className="h-64 mb-4">
+        <div className="flex-1 flex flex-col">
+          {/* Map container with fixed height */}
+          <div className="flex-1 max-h-[450px]">
             <ComposableMap
               projection="geoMercator"
               projectionConfig={{
-                scale: 100,
+                scale: 120,
                 center: [0, 20]
               }}
               className="w-full h-full"
@@ -218,57 +243,67 @@ export default function GeoMap({ packets = [], userSelectedIPs = [] }) {
                   ))
                 }
               </Geographies>
-              {/* Only show markers if we have geoData */}
-              {geoData.length > 0 && geoData.map(({ longitude, latitude, count }, i) => (
+              {/* Show markers - either real data or default locations */}
+              {geoData.map(({ longitude, latitude, count, isDemo }, i) => (
                 <Marker key={i} coordinates={[longitude, latitude]}>
                   <circle
                     r={Math.min(5 + (count / maxCount) * 15, 15)}
                     fill={colorScale(count)}
                     stroke="#FFF"
                     strokeWidth={1}
-                    fillOpacity={0.7}
+                    fillOpacity={isDemo ? 0.5 : 0.7}
+                    className={isDemo ? 'opacity-70' : ''}
                   />
                 </Marker>
               ))}
             </ComposableMap>
           </div>
           
-          {/* Show table if we have data, otherwise show message */}
-          {mapData.length > 0 ? (
-            <div className="overflow-auto flex-1">
-              <div className="text-sm mb-2">
-                Showing data from: <span className="font-medium">{displayMode === 'manual' ? 'User Selection' : 'System Packets'}</span>
-              </div>
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-700">
-                  <tr>
-                    <th className="px-4 py-2 text-left">Country</th>
-                    <th className="px-4 py-2 text-left">Requests</th>
-                    <th className="px-4 py-2 text-left">Percentage</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {mapData.map((item, index) => (
-                    <tr key={index}>
-                      <td className="px-4 py-2">{item.country}</td>
-                      <td className="px-4 py-2">{item.count}</td>
-                      <td className="px-4 py-2">{item.percentage}</td>
+          {/* Table container with scrollable content */}
+          <div className="mt-2 flex-1 overflow-auto max-h-[150px]">
+            {mapData.length > 0 ? (
+              <>
+                <div className="text-sm mb-1">
+                  {debugInfo.isDemoData ? (
+                    <span className="text-gray-500 italic">Showing demo data</span>
+                  ) : (
+                    <>Showing data from: <span className="font-medium">{displayMode === 'manual' ? 'User Selection' : 'System Packets'}</span></>
+                  )}
+                </div>
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                    <tr>
+                      <th className="px-3 py-1 text-left text-xs">Country</th>
+                      <th className="px-3 py-1 text-left text-xs">Requests</th>
+                      <th className="px-3 py-1 text-left text-xs">Percentage</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center flex-1 text-gray-500 dark:text-gray-400">
-              {displayMode === 'manual' 
-                ? userSelectedIPs.length > 0
-                  ? 'No valid geographic data for selected IPs'
-                  : 'No IPs selected by user'
-                : packets.length > 0 
-                  ? 'No geographic data available (all packets may be local traffic)' 
-                  : 'No packet data available'}
-            </div>
-          )}
+                  </thead>
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    {mapData.map((item, index) => (
+                      <tr key={index} className={`hover:bg-gray-50 dark:hover:bg-gray-700 ${item.isDemo ? 'text-gray-500 italic' : ''}`}>
+                        <td className="px-3 py-1 text-sm">
+                          {item.country}
+                          {item.isDemo && ' (demo)'}
+                        </td>
+                        <td className="px-3 py-1 text-sm">{item.count}</td>
+                        <td className="px-3 py-1 text-sm">{item.percentage}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 text-sm">
+                {displayMode === 'manual' 
+                  ? userSelectedIPs.length > 0
+                    ? 'No valid geographic data for selected IPs'
+                    : 'No IPs selected by user'
+                  : packets.length > 0 
+                    ? 'No geographic data available (all packets may be local traffic)' 
+                    : 'No packet data available'}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
