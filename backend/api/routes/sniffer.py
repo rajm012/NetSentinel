@@ -5,7 +5,7 @@ from typing import List, Optional, Dict, Any
 # from backend.sniffer.adapters.pcap_adapter import read_pcap
 import tempfile
 import os, time
-import uuid
+import uuid, sys
 
 router = APIRouter()
 
@@ -322,3 +322,144 @@ async def tshark_parser(file: UploadFile = File(...)):
     
     return results
 
+# ---------------------------------------------------------------------
+
+import logging as lg
+import platform
+import sys
+from psutil import net_if_addrs
+
+# Configure the logger
+logger = lg.getLogger("network_logger")
+logger.setLevel(lg.DEBUG)
+handler = lg.StreamHandler()
+formatter = lg.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+@router.get("/interface")
+def get_network_interface_details():
+    """List detailed network interface info"""
+    try:
+        interfaces_info = {}
+        interfaces = net_if_addrs()
+
+        for interface_name, addresses in interfaces.items():
+            iface_details = []
+            for address in addresses:
+                iface_details.append({
+                    "address": address.address,
+                    "family": str(address.family),
+                    "netmask": address.netmask,
+                    "broadcast": address.broadcast
+                })
+            interfaces_info[interface_name] = iface_details
+
+        return {"interfaces": interfaces_info}
+
+    except Exception as e:
+        logger.error(f"Error retrieving interface details: {str(e)}")
+        raise HTTPException(status_code=500, detail="Could not retrieve interface details")
+
+    
+
+"""
+{
+    "interfaces": {
+        "Local Area Connection* 1": [
+            {
+                "address": "BA-1E-A4-8E-D3-F5",
+                "family": "-1",
+                "netmask": null,
+                "broadcast": null
+            },
+            {
+                "address": "169.254.173.245",
+                "family": "2",
+                "netmask": "255.255.0.0",
+                "broadcast": null
+            },
+            {
+                "address": "fe80::eb07:cb3c:2558:8727",
+                "family": "23",
+                "netmask": null,
+                "broadcast": null
+            }
+        ],
+        "Local Area Connection* 2": [
+            {
+                "address": "FA-1E-A4-8E-D3-F5",
+                "family": "-1",
+                "netmask": null,
+                "broadcast": null
+            },
+            {
+                "address": "169.254.138.47",
+                "family": "2",
+                "netmask": "255.255.0.0",
+                "broadcast": null
+            },
+            {
+                "address": "fe80::240a:8c0f:8f57:b83f",
+                "family": "23",
+                "netmask": null,
+                "broadcast": null
+            }
+        ],
+        "Wi-Fi": [
+            {
+                "address": "B8-1E-A4-8E-D3-2C",
+                "family": "-1",
+                "netmask": null,
+                "broadcast": null
+            },
+            {
+                "address": "172.18.34.244",
+                "family": "2",
+                "netmask": "255.255.252.0",
+                "broadcast": null
+            },
+            {
+                "address": "fe80::bf62:d9d4:45f1:38ab",
+                "family": "23",
+                "netmask": null,
+                "broadcast": null
+            }
+        ],
+        "Ethernet": [
+            {
+                "address": "08-8F-C3-E0-38-3C",
+                "family": "-1",
+                "netmask": null,
+                "broadcast": null
+            },
+            {
+                "address": "169.254.92.133",
+                "family": "2",
+                "netmask": "255.255.0.0",
+                "broadcast": null
+            },
+            {
+                "address": "fe80::fc0b:f7f7:1f1:eb2d",
+                "family": "23",
+                "netmask": null,
+                "broadcast": null
+            }
+        ],
+        "Loopback Pseudo-Interface 1": [
+            {
+                "address": "127.0.0.1",
+                "family": "2",
+                "netmask": "255.0.0.0",
+                "broadcast": null
+            },
+            {
+                "address": "::1",
+                "family": "23",
+                "netmask": null,
+                "broadcast": null
+            }
+        ]
+    }
+}
+"""

@@ -6,6 +6,7 @@ import LoginPage from "./views/LoginPage"
 import DashboardLayout from "./components/layouts/DashboardLayout";;
 import "./index.css";
 import RealtimeView from "../src/views/dashboard/RealtimeView";
+import HistoricalView from "../src/views/dashboard/HistoricalView";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
       {/* -----------------------dashboard routes------------------------------------ */}
       <Route path="/dashboard" element={<DashboardLayout />}>
       <Route path="realtime" element={<RealtimeView />} />
+      <Route path="historical" element={<HistoricalView />} />
       </Route>
 
       </Routes>
