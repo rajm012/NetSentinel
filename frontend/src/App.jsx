@@ -7,6 +7,7 @@ import DashboardLayout from "./components/layouts/DashboardLayout";;
 import "./index.css";
 import RealtimeView from "../src/views/dashboard/RealtimeView";
 import HistoricalView from "../src/views/dashboard/HistoricalView";
+import ThreatIntelView from "../src/views/dashboard/ThreatIntelView";
 
 
 function App() {
@@ -22,8 +23,8 @@ function App() {
       <Route path="/dashboard" element={<DashboardLayout />}>
       <Route path="realtime" element={<RealtimeView />} />
       <Route path="historical" element={<HistoricalView />} />
+      <Route path="threat-intel" element={<ThreatIntelView />} />
       </Route>
-
       </Routes>
     </Router>
   );
