@@ -83,3 +83,17 @@ export const parseWithTshark = async (file) => {
   });
   return response.data;
 };
+
+export const fetchRecentPackets = async (selectedInterface) => {
+  try {
+    const res = await axios.get(`${API_BASE}/sniffer/start-fetch`, {
+      params: { iface: selectedInterface, duration: 10 },
+    });
+
+    console.log("Sniffed Packets:", res.data);
+    setPackets(res.data.packets);
+  } 
+  catch (err) {
+    console.error("Failed to fetch packets", err);
+  }
+};

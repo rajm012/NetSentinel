@@ -463,3 +463,44 @@ def get_network_interface_details():
     }
 }
 """
+
+# ============================================================================
+from fastapi import Query
+
+lg = lg.getLogger("network_logger")
+
+def packet_to_dict(pkt):
+    from datetime import datetime
+    return {
+        "time": datetime.fromtimestamp(pkt.time).isoformat(),
+        "summary": pkt.summary()
+    }
+
+
+@router.get("/start-fetch")
+def start_fetch_packets(
+    iface: str = Query(..., description="Interface to sniff on"),
+    duration: int = Query(10, ge=1, le=30, description="Duration in seconds to sniff")
+):
+    """
+    Capture live packets from a given interface for the last `duration` seconds.
+    """
+    from scapy.all import sniff
+    try:
+        lg.info(f"Sniffing packets on interface: {iface} for {duration} seconds")
+        packets = sniff(iface=iface, timeout=duration)
+        parsed_packets = [packet_to_dict(pkt) for pkt in packets]
+
+        return {
+            "interface": iface,
+            "duration": duration,
+            "packet_count": len(parsed_packets),
+            "packets": parsed_packets
+        }
+
+    except Exception as e:
+        lg.error(f"Error during sniffing: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================

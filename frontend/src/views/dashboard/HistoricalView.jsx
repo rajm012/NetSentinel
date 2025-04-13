@@ -1,18 +1,8 @@
-import { useState } from 'react';
-import { 
-  startLiveSniffer, 
-  stopLiveSniffer,
-  getLiveSnifferStatus,
-  getLiveSnifferResults,
-  listActiveSniffers,
-  deleteLiveSniffer,
-  analyzePcap,
-  getPcapAnalysisStatus,
-  getPcapAnalysisResults,
-  getPcapAnalysisSummary,
-  deletePcapAnalysis,
-  parseWithTshark
-} from '../../utils/hispi';
+import { useState, useEffect } from 'react';
+import { startLiveSniffer, stopLiveSniffer, getLiveSnifferStatus, listActiveSniffers, 
+    deleteLiveSniffer, analyzePcap, getPcapAnalysisStatus, getPcapAnalysisResults, getPcapAnalysisSummary, 
+    deletePcapAnalysis, parseWithTshark } from '../../utils/hispi';
+import axios from 'axios';
 
 export default function HistoricalView() {
   const [sessionId, setSessionId] = useState(null);
@@ -31,25 +21,68 @@ export default function HistoricalView() {
   const [pcapAnalysisSummary, setPcapAnalysisSummary] = useState(null);
   const [pcapLimit, setPcapLimit] = useState(100);
   const [pcapOffset, setPcapOffset] = useState(0);
+  
+  // Sniffer configuration state
+  const [snifferConfig, setSnifferConfig] = useState({
+    iface: "",
+    filters: [],
+    name: ""
+  });
+  const [availableInterfaces, setAvailableInterfaces] = useState([]);
+  const [newFilter, setNewFilter] = useState("");
+  const API_BASE = "http://localhost:8000/api";
+
+  const fetchNetworkInterfaces = async () => {
+    try {
+      const response = await axios.get(`${API_BASE}/sniffer/interface`);
+    //   console.log('Raw interfaces response:', response.data);
+      const allInterfaces = Object.keys(response.data.interfaces);
+      const filteredInterfaces = allInterfaces.filter(
+        name =>
+          !name.toLowerCase().includes('loopback') &&
+          !name.toLowerCase().includes('pseudo') &&
+          !name.toLowerCase().includes('virtual') &&
+          !name.toLowerCase().includes('vmware') &&
+          !name.toLowerCase().includes('bluetooth') &&
+          name.trim() !== ''
+      );
+  
+    //   console.log('Available interfaces:', filteredInterfaces);
+      setAvailableInterfaces(filteredInterfaces);
+  
+      if (filteredInterfaces.length > 0) {
+        setSnifferConfig(prev => ({ ...prev, iface: filteredInterfaces[0] }));
+      }
+    } catch (err) {
+      console.error('Error fetching network interfaces:', err);
+      setError('Failed to fetch available network interfaces');
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchNetworkInterfaces();
+  }, []);
 
   const handleStartSession = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const config = {
-        iface: "Wi-Fi",
-        filters: ["tcp", "port 80"],
-        name: "HTTP Traffic Monitor"
-      };
-
-      const response = await startLiveSniffer(config);
+      const response = await startLiveSniffer({
+        iface: snifferConfig.iface,
+        filters: snifferConfig.filters,
+        name: snifferConfig.name || `Session ${new Date().toLocaleString()}`
+      });
+      
       setSessionId(response.id);
-      setActiveTab('sniffer'); // Switch to Sniffer Stuffs tab after starting
-    } catch (err) {
+      setActiveTab('sniffer');
+    } 
+    catch (err) {
       console.error('Error starting session:', err);
       setError('Failed to start session. Please try again.');
-    } finally {
+    } 
+    finally {
       setLoading(false);
     }
   };
@@ -62,10 +95,12 @@ export default function HistoricalView() {
       setSessionId(null);
       setSnifferStatus(null);
       setSnifferResults([]);
-    } catch (err) {
+    } 
+    catch (err) {
       console.error('Error stopping session:', err);
       setError('Failed to stop session. Please try again.');
-    } finally {
+    } 
+    finally {
       setLoading(false);
     }
   };
@@ -103,6 +138,33 @@ export default function HistoricalView() {
     }
   };
 
+  const [selectedInterface, setSelectedInterface] = useState('Wi-Fi'); // or any default
+  const [packets, setPackets] = useState([]);
+  const [meta, setMeta] = useState(null);
+
+  const fetchRecentPackets = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get(`${API_BASE}/sniffer/start-fetch`, {
+        params: {
+          iface: selectedInterface,
+          duration: 3,
+        },
+      });
+      const { packets, ...rest } = res.data;
+      setPackets(packets);
+      setMeta(rest);
+    } 
+    catch (err) {
+      console.error('Failed to fetch packets', err);
+      setError('Failed to fetch packet data');
+    } 
+    finally {
+      setLoading(false);
+    }
+  };
+
   const handleGetSnifferStatus = async () => {
     try {
       setLoading(true);
@@ -116,18 +178,18 @@ export default function HistoricalView() {
     }
   };
 
-  const handleGetSnifferResults = async () => {
-    try {
-      setLoading(true);
-      const results = await getLiveSnifferResults(sessionId);
-      setSnifferResults(results);
-    } catch (err) {
-      console.error('Error getting sniffer results:', err);
-      setError('Failed to get sniffer results.');
-    } finally {
-      setLoading(false);
-    }
-  };
+//   const handleGetSnifferResults = async () => {
+//     try {
+//       setLoading(true);
+//       const results = await getLiveSnifferResults(sessionId);
+//       setSnifferResults(results);
+//     } catch (err) {
+//       console.error('Error getting sniffer results:', err);
+//       setError('Failed to get sniffer results.');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
   const handleAnalyzePcap = async () => {
     if (!pcapFile) return;
@@ -163,8 +225,6 @@ export default function HistoricalView() {
       setLoading(false);
     }
   };
-
-//   -----------------------------------------
 
 const handleGetPcapStatus = async () => {
     try {
@@ -222,8 +282,28 @@ const handleGetPcapStatus = async () => {
     }
   };
 
-//   --------------------------------------
-
+  const formatPacket = (packetString) => {
+    // Extract timestamp in square brackets
+    const timeMatch = packetString.match(/^\[(.*?)\]/);
+    const time = timeMatch ? timeMatch[1] : "Unknown Time";
+  
+    // Remove the timestamp part
+    const rest = packetString.replace(/^\[.*?\]\s*/, '');
+  
+    // Split protocol layers and payload
+    const layers = rest.split(" / ");
+    const lastLayer = layers.pop();
+    const layerStack = layers.join(" / ");
+  
+    return (
+      <div className="mt-4 max-h-108 overflow-y-auto border bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm text-sm mb-2">
+        <p><span className="font-semibold">⏱ Time:</span> {time}</p>
+        <p><span className="font-semibold">📦 Protocol Stack:</span> {layerStack}</p>
+        <p><span className="font-semibold">🧩 Payload:</span> {lastLayer}</p>
+      </div>
+    );
+  };
+  
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="flex justify-between items-center mb-6">
@@ -231,17 +311,102 @@ const handleGetPcapStatus = async () => {
       </div>
 
       {!sessionId ? (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Click the button below to start a new monitoring session
-          </p>
-          <button
-            onClick={handleStartSession}
-            disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-lg font-medium disabled:opacity-50"
-          >
-            {loading ? 'Starting Session...' : 'Start New Session'}
-          </button>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Configure Sniffer</h2>
+          
+          <div className="space-y-4">
+            {/* Interface Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Network Interface
+              </label>
+              <select
+                value={snifferConfig.iface}
+                onChange={(e) => setSnifferConfig({ ...snifferConfig, iface: e.target.value })}
+                className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white rounded px-3 py-2 text-sm"
+              >
+                {availableInterfaces.length > 0 ? (
+                  availableInterfaces.map((iface) => (
+                    <option key={iface} value={iface}>{iface}</option>
+                  ))
+                ) : (
+                  <option value="">No interfaces available</option>
+                )}
+              </select>
+            </div>
+
+            {/* Filter Configuration */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Filters
+              </label>
+              <div className="flex space-x-2 mb-2">
+                <input
+                  type="text"
+                  value={newFilter}
+                  onChange={(e) => setNewFilter(e.target.value)}
+                  placeholder="e.g., tcp, port 80"
+                  className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white rounded px-3 py-2 text-sm"
+                />
+                <button
+                  onClick={() => {
+                    if (newFilter.trim()) {
+                      setSnifferConfig({
+                        ...snifferConfig,
+                        filters: [...snifferConfig.filters, newFilter.trim()]
+                      });
+                      setNewFilter("");
+                    }
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm"
+                >
+                  Add
+                </button>
+              </div>
+              {snifferConfig.filters.length > 0 && (
+                <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded">
+                  {snifferConfig.filters.map((filter, index) => (
+                    <div key={index} className="flex justify-between items-center py-1">
+                      <span className="text-sm text-gray-800 dark:text-gray-300">{filter}</span>
+                      <button
+                        onClick={() => {
+                          setSnifferConfig({
+                            ...snifferConfig,
+                            filters: snifferConfig.filters.filter((_, i) => i !== index)
+                          });
+                        }}
+                        className="text-red-500 hover:text-red-700 dark:hover:text-red-400 text-xs p-1"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Session Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Session Name
+              </label>
+              <input
+                type="text"
+                value={snifferConfig.name}
+                onChange={(e) => setSnifferConfig({ ...snifferConfig, name: e.target.value })}
+                className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white rounded px-3 py-2 text-sm"
+                placeholder="My Monitoring Session"
+              />
+            </div>
+
+            <button
+              onClick={handleStartSession}
+              disabled={!snifferConfig.iface || loading}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-lg font-medium disabled:opacity-50 w-full"
+            >
+              {loading ? 'Starting Session...' : 'Start New Session'}
+            </button>
+          </div>
         </div>
       ) : (
         <>
@@ -264,6 +429,7 @@ const handleGetPcapStatus = async () => {
             </div>
           </div>
 
+          {/* Keep all your existing tab content unchanged */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
             <div className="flex border-b border-gray-200 dark:border-gray-700">
               <button
@@ -287,52 +453,51 @@ const handleGetPcapStatus = async () => {
             </div>
 
             <div className="p-4">
-              
             {activeTab === 'pcap' && (
-  <div className="space-y-4">
-    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">PCAP Analysis</h3>
+                <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">PCAP Analysis</h3>
     
-    {/* File Upload Section */}
-    <div className="space-y-3 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-      <h4 className="font-medium text-gray-800 dark:text-white">Upload PCAP</h4>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          PCAP File
-        </label>
-        <input
-          type="file"
-          onChange={(e) => setPcapFile(e.target.files[0])}
-          className="block w-full text-sm text-gray-500
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-md file:border-0
-            file:text-sm file:font-semibold
-            file:bg-blue-50 file:text-blue-700
-            hover:file:bg-blue-100
-            dark:file:bg-gray-700 dark:file:text-white
-            dark:hover:file:bg-gray-600"
-          accept=".pcap,.pcapng"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Analysis Name (optional)
-        </label>
-        <input
-          type="text"
-          value={pcapName}
-          onChange={(e) => setPcapName(e.target.value)}
-          className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white rounded px-3 py-2 text-sm"
-          placeholder="My PCAP Analysis"
-        />
-      </div>
-      <button
-        onClick={handleAnalyzePcap}
-        disabled={!pcapFile || loading}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm disabled:opacity-50"
-      >
-        {loading ? 'Analyzing...' : 'Analyze PCAP'}
-      </button>
-    </div>
+                {/* File Upload Section */}
+                <div className="space-y-3 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-800 dark:text-white">Upload PCAP</h4>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    PCAP File
+                    </label>
+                    <input
+                    type="file"
+                    onChange={(e) => setPcapFile(e.target.files[0])}
+                    className="block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-md file:border-0
+                        file:text-sm file:font-semibold
+                      file:bg-blue-50 file:text-blue-700
+                      hover:file:bg-blue-100
+                      dark:file:bg-gray-700 dark:file:text-white
+                      dark:hover:file:bg-gray-600"
+                    accept=".pcap,.pcapng"
+                    />
+                </div>
+                <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Analysis Name (optional)
+                </label>
+                <input
+                    type="text"
+                    value={pcapName}
+                    onChange={(e) => setPcapName(e.target.value)}
+                    className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white rounded px-3 py-2 text-sm"
+                    placeholder="My PCAP Analysis"
+                />
+                </div>
+            <button
+                onClick={handleAnalyzePcap}
+                disabled={!pcapFile || loading}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm disabled:opacity-50"
+            >
+            {loading ? 'Analyzing...' : 'Analyze PCAP'}
+            </button>
+        </div>
 
     {/* Analysis Controls Section */}
     {pcapAnalysisId && (
@@ -455,7 +620,8 @@ const handleGetPcapStatus = async () => {
     )}
   </div>
 )}
-              {activeTab === 'tshark' && (
+
+            {activeTab === 'tshark' && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-gray-800 dark:text-white">TShark Parser</h3>
                   <div className="space-y-3">
@@ -509,11 +675,11 @@ const handleGetPcapStatus = async () => {
                         Get Sniffer Status
                       </button>
                       <button
-                        onClick={handleGetSnifferResults}
+                        onClick={fetchRecentPackets}
                         disabled={loading}
                         className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm disabled:opacity-50"
                       >
-                        Get Sniffer Results
+                        {loading ? 'Fetching...' : 'Get Sniffer Results'}
                       </button>
                       <button
                         onClick={handleActiveSniffers}
@@ -547,6 +713,28 @@ const handleGetPcapStatus = async () => {
                           {JSON.stringify(snifferResults, null, 2)}
                         </pre>
                       </div>
+                    )}
+                    {error && <p className="text-red-500 mt-2">{error}</p>}
+
+                    {meta && (
+                        <div className="mt-4">
+                        <p><strong>Interface:</strong> {meta.interface}</p>
+                        <p><strong>Duration:</strong> {meta.duration}s</p>
+                        <p><strong>Packet Count:</strong> {meta.packet_count}</p>
+                    </div>
+                    )}
+
+                    {packets.length > 0 && (
+                    <div className="mt-4 max-h-108 overflow-y-auto bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h3 className="font-semibold mb-2">Packets:</h3>
+                        <ul className="text-sm space-y-1">
+                        {packets.slice(0, 100).map((pkt, index) => (
+                            <div key={index}>
+                            {formatPacket(`[${pkt.time}] ${pkt.summary}`)}
+                            </div>
+                        ))}
+                        </ul>
+                    </div>
                     )}
                   </div>
                 </div>
