@@ -2,3 +2,9 @@ dns_tunneling:
   min_subdomain_length: 12
   max_avg_entropy: 4.5
   suspicious_domains: ["example.com", "dnslog.cn"]
+  detection_threshold: 0.8
+  monitoring_interval: 300
+  alert_level: "critical"
+  log_directory: "/var/log/dns_monitor"
+  ignore_ips: ["192.168.1.5", "10.0.0.15"]
+  

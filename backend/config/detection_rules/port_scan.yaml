@@ -1,4 +1,9 @@
-# config/detection_rules/port_scan.yaml
 port_scan:
   ports_threshold: 100
-  time_window: 10  # seconds
+  time_window: 10
+  alert_level: "high"
+  ignore_ips: ["192.168.1.10"]
+  tcp_scan_detection: true
+  udp_scan_detection: false
+  notification_email: "rajmahimaurya@gmail.com"
+  log_events: true

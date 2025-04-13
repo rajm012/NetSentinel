@@ -1,0 +1,33 @@
+# config.yaml
+general:
+  log_level: "info"
+  log_file: "/var/log/security_monitor.log"
+  alert_email: "admin@example.com"
+  monitoring_interval: 60
+
+modules:
+  arp_spoof:
+    enabled: true
+    config_file: "arp_spoof.json"
+  
+  dns_tunneling:
+    enabled: true
+    config_file: "dns_tunneling.yaml"
+  
+  port_scan:
+    enabled: true
+    config_file: "port_scan.yaml"
+    notification_email: "rajmahimaurya@gmail.com"
+
+reporting:
+  database:
+    type: "sqlite"
+    path: "/var/lib/security_monitor/events.db"
+  
+  api:
+    enabled: true
+    listen_address: "127.0.0.1"
+    port: 8000
+    require_auth: true
+    api_keys:
+      - "5f4d7c3b2a1e9f8d7c3b2a1e9f8d7c3b"

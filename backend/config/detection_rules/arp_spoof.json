@@ -1,5 +1,8 @@
 {
-    "check_gratuitous": true,
-    "duplicate_macs_threshold": 2
-  }
-  
+  "check_gratuitous": true,
+  "duplicate_macs_threshold": 2,
+  "alert_level": "warning",
+  "monitoring_interval": 60,
+  "ignore_macs": ["00:11:22:33:44:55"],
+  "log_events": true
+}
