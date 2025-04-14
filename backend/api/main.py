@@ -18,6 +18,7 @@ from backend.api.routes.detectors import router as detectors_router
 from backend.api.routes.processing import router as processing_router
 from backend.api.routes.config import router as config_router
 from backend.api.routes.alerts import router as alerts_router
+from backend.api.routes.testbed import router as testbed_router
 
 # Create FastAPI app
 app = FastAPI(
@@ -60,6 +61,7 @@ app.include_router(detectors_router, prefix="/api/detect", tags=["Detection"])
 app.include_router(processing_router, prefix="/api/processing", tags=["Processing"])
 app.include_router(config_router, prefix="/api/config", tags=["Configuration"])
 app.include_router(alerts_router, prefix="/api/alerts", tags=["Alerts"])
+app.include_router(testbed_router, prefix="/api/testbed", tags=["Testbed"])
 
 # Add error handlers
 @app.exception_handler(Exception)
@@ -86,7 +88,8 @@ def root():
             "detection": "/api/detect",
             "processing": "/api/processing",
             "configuration": "/api/config",
-            "alerts": "/api/alerts"
+            "alerts": "/api/alerts",
+            "testbed": "/api/testbed",
         }
     }
 

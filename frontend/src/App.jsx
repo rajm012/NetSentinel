@@ -9,6 +9,7 @@ import RealtimeView from "../src/views/dashboard/RealtimeView";
 import HistoricalView from "../src/views/dashboard/HistoricalView";
 import ThreatIntelView from "../src/views/dashboard/ThreatIntelView";
 import ConfigurationView from "../src/views/dashboard/ConfigView";
+import TestbedView from "../src/views/dashboard/TestbedView";
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
       <Route path="historical" element={<HistoricalView />} />
       <Route path="threat-intel" element={<ThreatIntelView />} />
       <Route path="config" element={<ConfigurationView />} />
+      <Route path="testbed" element={<TestbedView />} />
       </Route>
       </Routes>
     </Router>

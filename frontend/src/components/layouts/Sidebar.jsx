@@ -6,7 +6,7 @@ const navItems = [
   { label: "📁 Historical", path: "/dashboard/historical" },
   { label: "🧠 Threat Intel", path: "/dashboard/threat-intel" },
   { label: "⚙️ Configuration", path: "/dashboard/config" },
-  { lable: "🧪 Packet Testbed", path: "/dashboard/testbed"},
+  { label: "🧪 Packet Testbed", path: "/dashboard/testbed" },
   { label: "📦 Upload Logs", path: "/dashboard/upload-logs" },
   { label: "📜 Docs", path: "/docs" },
   { label: "🧑‍💼 Profile", path: "/dashboard/profile" },
