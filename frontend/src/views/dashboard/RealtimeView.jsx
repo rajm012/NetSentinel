@@ -45,6 +45,7 @@ export default function RealtimeView() {
       if (response.sniffers.length > 0) {
         setActiveSniffer(response.sniffers[0].id)
         setIsCapturing(response.sniffers[0].running)
+        console.log('Active Sniffer:', response.sniffers[0])
       }
     } 
     catch (error) {
@@ -65,6 +66,8 @@ export default function RealtimeView() {
         setPackets(prev => [...response.results, ...prev].slice(0, 1000))
         processTrafficData(response.results)
         setLastUpdate(response.timestamp)
+        console.log('Packet updates fetched:', response.results)
+        console.log("Fetching packets for:", activeSniffer, "Since:", lastUpdate) 
       }
     } 
     catch (error) {
@@ -77,6 +80,7 @@ export default function RealtimeView() {
     try {
       const response = await fetchApi('/api/alerts?limit=10&severity=high')
       setAlerts(response.alerts)
+      console.log('Alerts fetched:', response.alerts)
     } 
     catch (error) {
       enqueueSnackbar('Error fetching alerts', { variant: 'error' });
@@ -103,6 +107,7 @@ export default function RealtimeView() {
         srcPort,
         dstPort
       })
+      console.log('Traffic update processed:', { timestamp: pkt.timestamp, protocol, srcPort, dstPort })
     })
     
     setProtocolData(Object.entries(protocolCounts).map(([name, value]) => ({
@@ -124,6 +129,8 @@ export default function RealtimeView() {
       setActiveSniffer(response.id)
       setIsCapturing(true)
       enqueueSnackbar('Capture started successfully', { variant: 'success' })
+      console.log('Capture started:', response)
+      console.log('Active Sniffer ID:', response.id)
     } 
     catch (error) {
       enqueueSnackbar('Error starting capture', { variant: 'error' });
@@ -141,6 +148,8 @@ export default function RealtimeView() {
       
       setIsCapturing(false)
       enqueueSnackbar('Capture stopped successfully', { variant: 'success' })
+      console.log('Capture stopped')
+      console.log('Active Sniffer ID:', activeSniffer)
     } 
     catch (error) {
       enqueueSnackbar('Error stopping capture', { variant: 'error' });
@@ -223,6 +232,7 @@ function PacketTable({ packets }) {
   const getProtocolColor = (protocol) => {
     if (!protocol) return protocolColors.default
     const proto = protocol.toLowerCase()
+    console.log(proto)
     return protocolColors[proto] || protocolColors.default
   }
 

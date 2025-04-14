@@ -56,8 +56,9 @@ const PacketUploader = ({ onUpload, isLoading }) => {
 
     try {
       const result = await uploadPcap(selectedFile);
-      setTestJobId(result.jobId); 
-    } 
+      setTestJobId(result.jobId);
+      // alert('File uploaded successfully! Job ID: ' + result.jobId);
+    }
     catch (error) {
       console.error('Upload error:', error);
       setTestJobId(null);
@@ -137,6 +138,7 @@ const PacketUploader = ({ onUpload, isLoading }) => {
           <li>The system will analyze all packets in the capture</li>
         </ul>
       </div>
+      <TestbedControls jobId={testJobId} isLoading={isLoading} />
     </div>
     
   );
