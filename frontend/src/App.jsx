@@ -10,6 +10,7 @@ import HistoricalView from "../src/views/dashboard/HistoricalView";
 import ThreatIntelView from "../src/views/dashboard/ThreatIntelView";
 import ConfigurationView from "../src/views/dashboard/ConfigView";
 import TestbedView from "../src/views/dashboard/TestbedView";
+import PacketDetailView from "../src/views/dashboard/PacketDetailView";
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
       <Route path="threat-intel" element={<ThreatIntelView />} />
       <Route path="config" element={<ConfigurationView />} />
       <Route path="testbed" element={<TestbedView />} />
+      <Route path="upload-logs" element={<PacketDetailView />} />
       </Route>
       </Routes>
     </Router>
