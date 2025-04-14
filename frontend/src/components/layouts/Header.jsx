@@ -8,10 +8,13 @@ const Header = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <span className="text-2xl mr-2">🛡️</span>
-              <span className="text-xl font-bold">PacketSniffer</span>
+              <span className="text-xl font-bold">NetSentinel</span>
             </Link>
           </div>
           <nav className="hidden md:flex space-x-8">
+          <Link to="/" className="text-gray-300 hover:text-white">
+              Home
+            </Link>
             <Link to="/dashboard" className="text-gray-300 hover:text-white">
               Dashboard
             </Link>

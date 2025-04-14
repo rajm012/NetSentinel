@@ -16,6 +16,7 @@ import Footer from "./components/layouts/Footer";
 import ProfileView from "../src/views/dashboard/ProfileView";
 import SettingsView from "../src/views/dashboard/SettingsView";
 import DocumentationPage from "../src/views/dashboard/DocumentationPage";
+import AboutPage from "./views/AboutPage";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/docs" element={<DocsPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/about" element={<AboutPage />} />
 
       {/* -----------------------dashboard routes------------------------------------ */}
       <Route path="/dashboard" element={<DashboardLayout />}>

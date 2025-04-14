@@ -1,14 +1,24 @@
 import React from 'react';
-import { BookOpenIcon, LightningBoltIcon, ClockIcon, ShieldCheckIcon, CogIcon, BeakerIcon, UploadIcon, UserIcon } from '@heroicons/react/outline';
+import { BookOpenIcon, LightningBoltIcon, ClockIcon, ShieldCheckIcon, CogIcon, BeakerIcon, UploadIcon } from '@heroicons/react/outline';
 
 const DocumentationPage = () => {
   return (
-    <div className="bg-gray-950 text-gray-100 min-h-screen p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="relative text-gray-100 min-h-screen p-6">
+      {/* Animated background from HomePage */}
+      <div className="absolute inset-0 z-0 bg-gray-950">
+        {/* Cool animated grid background */}
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(circle,#00ffe088_1px,transparent_1px)] bg-[size:18px_18px] animate-pulse" />
+
+        {/* Optional gradient glows */}
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-cyan-400/20 to-transparent blur-lg z-0" />
+        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-cyan-400/20 to-transparent blur-lg z-0" />
+      </div>
+
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Header */}
         <div className="flex items-center mb-8">
           <BookOpenIcon className="h-8 w-8 text-blue-400 mr-3" />
-          <h1 className="text-3xl font-bold text-blue-400">PacketSniffer Documentation</h1>
+          <h1 className="text-3xl font-bold text-blue-400">NetSentinel Documentation</h1>
         </div>
 
         {/* Search Bar */}
@@ -30,7 +40,7 @@ const DocumentationPage = () => {
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar Navigation */}
-          <div className="lg:col-span-1 bg-gray-900 rounded-lg p-4 border border-gray-800 h-fit">
+          <div className="lg:col-span-1 bg-gray-900/80 backdrop-blur-sm rounded-lg p-4 border border-gray-800 h-fit">
             <h2 className="text-lg font-semibold mb-4 text-gray-300 border-b border-gray-800 pb-2">Sections</h2>
             <nav className="space-y-2">
               <a href="#getting-started" className="block py-2 px-3 rounded hover:bg-gray-800 text-gray-300 hover:text-white">Getting Started</a>
@@ -48,7 +58,7 @@ const DocumentationPage = () => {
           {/* Documentation Content */}
           <div className="lg:col-span-3 space-y-12">
             {/* Getting Started */}
-            <section id="getting-started" className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+            <section id="getting-started" className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-6 border border-gray-800">
               <h2 className="text-2xl font-bold mb-4 text-blue-400 flex items-center">
                 <BookOpenIcon className="h-6 w-6 mr-2" />
                 Getting Started
@@ -56,7 +66,7 @@ const DocumentationPage = () => {
               <div className="prose prose-invert max-w-none">
                 <h3 className="text-xl font-semibold mb-3 text-gray-300">Introduction</h3>
                 <p className="text-gray-300 mb-4">
-                  PacketSniffer is a comprehensive network monitoring and threat detection system designed for security professionals. 
+                  NetSentinel is a comprehensive network monitoring and threat detection system designed for security professionals. 
                   It provides real-time traffic analysis, historical data review, and advanced threat detection capabilities.
                 </p>
 
@@ -104,7 +114,7 @@ const DocumentationPage = () => {
             </section>
 
             {/* Real-Time Monitoring */}
-            <section id="real-time" className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+            <section id="real-time" className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-6 border border-gray-800">
               <h2 className="text-2xl font-bold mb-4 text-blue-400 flex items-center">
                 <LightningBoltIcon className="h-6 w-6 mr-2" />
                 Real-Time Monitoring
@@ -165,7 +175,7 @@ const DocumentationPage = () => {
             </section>
 
             {/* Historical Data */}
-            <section id="historical" className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+            <section id="historical" className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-6 border border-gray-800">
               <h2 className="text-2xl font-bold mb-4 text-blue-400 flex items-center">
                 <ClockIcon className="h-6 w-6 mr-2" />
                 Historical Data Analysis
@@ -209,7 +219,7 @@ const DocumentationPage = () => {
             </section>
 
             {/* Threat Intelligence */}
-            <section id="threat-intel" className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+            <section id="threat-intel" className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-6 border border-gray-800">
               <h2 className="text-2xl font-bold mb-4 text-blue-400 flex items-center">
                 <ShieldCheckIcon className="h-6 w-6 mr-2" />
                 Threat Intelligence
@@ -258,14 +268,14 @@ const DocumentationPage = () => {
             </section>
 
             {/* Configuration */}
-            <section id="configuration" className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+            <section id="configuration" className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-6 border border-gray-800">
               <h2 className="text-2xl font-bold mb-4 text-blue-400 flex items-center">
                 <CogIcon className="h-6 w-6 mr-2" />
                 System Configuration
               </h2>
               <div className="prose prose-invert max-w-none">
                 <p className="text-gray-300 mb-4">
-                  Customize PacketSniffer's behavior to match your network environment and security requirements.
+                  Customize NetSentinel's behavior to match your network environment and security requirements.
                 </p>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-300">Configuration Sections</h3>
@@ -331,7 +341,7 @@ const DocumentationPage = () => {
             </section>
 
             {/* Packet Testbed */}
-            <section id="testbed" className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+            <section id="testbed" className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-6 border border-gray-800">
               <h2 className="text-2xl font-bold mb-4 text-blue-400 flex items-center">
                 <BeakerIcon className="h-6 w-6 mr-2" />
                 Packet Testbed
@@ -372,7 +382,7 @@ const DocumentationPage = () => {
             </section>
 
             {/* Log Upload */}
-            <section id="upload-logs" className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+            <section id="upload-logs" className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-6 border border-gray-800">
               <h2 className="text-2xl font-bold mb-4 text-blue-400 flex items-center">
                 <UploadIcon className="h-6 w-6 mr-2" />
                 Log Upload and Analysis
@@ -425,11 +435,11 @@ const DocumentationPage = () => {
             </section>
 
             {/* API Reference */}
-            <section id="api" className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+            <section id="api" className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-6 border border-gray-800">
               <h2 className="text-2xl font-bold mb-4 text-blue-400">API Reference</h2>
               <div className="prose prose-invert max-w-none">
                 <p className="text-gray-300 mb-4">
-                  Programmatically interact with PacketSniffer through its REST API for automation and integration.
+                  Programmatically interact with NetSentinel through its REST API for automation and integration.
                 </p>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-300">Authentication</h3>
@@ -507,7 +517,7 @@ const DocumentationPage = () => {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-300">Can I integrate with my SIEM?</h3>
                   <p className="text-gray-400">
-                    Yes, PacketSniffer supports integration with most major SIEMs through syslog forwarding, webhooks, or direct API calls.
+                    Yes, NetSentinel supports integration with most major SIEMs through syslog forwarding, webhooks, or direct API calls.
                     Configuration options are available in the Integrations section.
                   </p>
                 </div>

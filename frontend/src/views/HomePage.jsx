@@ -3,13 +3,16 @@ import { Link } from "react-router-dom";
 
 const HomePage = () => {
   return (
-    <div className="relative h-screen w-full bg-gradient-to-br from-gray-900 to-black text-white overflow-hidden">
+    <div className="relative text-gray-100 min-h-screen flex items-center justify-center">
+    {/* Animated background from HomePage */}
+    <div className="absolute inset-0 z-0 bg-gray-950">
       {/* Cool animated grid background */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle,#00ffe088_1px,transparent_1px)] bg-[size:18px_18px] animate-pulse" />
 
       {/* Optional gradient glows */}
       <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-cyan-400/20 to-transparent blur-lg z-0" />
       <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-cyan-400/20 to-transparent blur-lg z-0" />
+      </div>
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 text-center">

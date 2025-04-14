@@ -8,7 +8,7 @@ const DocumentationPage = () => {
         {/* Header */}
         <div className="flex items-center mb-8">
           <BookOpenIcon className="h-8 w-8 text-blue-400 mr-3" />
-          <h1 className="text-3xl font-bold text-blue-400">PacketSniffer Documentation</h1>
+          <h1 className="text-3xl font-bold text-blue-400">🛡️ NetSentinel Documentation</h1>
         </div>
 
         {/* Search Bar */}
@@ -56,7 +56,7 @@ const DocumentationPage = () => {
               <div className="prose prose-invert max-w-none">
                 <h3 className="text-xl font-semibold mb-3 text-gray-300">Introduction</h3>
                 <p className="text-gray-300 mb-4">
-                  PacketSniffer is a comprehensive network monitoring and threat detection system designed for security professionals. 
+                🛡️ NetSentinel is a comprehensive network monitoring and threat detection system designed for security professionals. 
                   It provides real-time traffic analysis, historical data review, and advanced threat detection capabilities.
                 </p>
 
@@ -416,7 +416,7 @@ const DocumentationPage = () => {
               <h2 className="text-2xl font-bold mb-4 text-blue-400">API Reference</h2>
               <div className="prose prose-invert max-w-none">
                 <p className="text-gray-300 mb-4">
-                  Programmatically interact with PacketSniffer through its REST API for automation and integration.
+                  Programmatically interact with NetSentinel through its REST API for automation and integration.
                 </p>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-300">Authentication</h3>
@@ -492,7 +492,7 @@ const DocumentationPage = () => {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-300">Can I integrate with my SIEM?</h3>
                   <p className="text-gray-400">
-                    Yes, PacketSniffer supports integration with most major SIEMs through syslog forwarding, webhooks, or direct API calls.
+                    Yes, NetSentinel supports integration with most major SIEMs through syslog forwarding, webhooks, or direct API calls.
                     Configuration options are available in the Integrations section.
                   </p>
                 </div>

@@ -21,7 +21,7 @@ const Sidebar = () => {
       <div className="p-6 pb-4">
         <h1 className="text-2xl font-bold flex items-center">
           <span className="text-blue-400 mr-2">🛡️</span>
-          <span>PacketSniffer</span>
+          <span>NetSentinel</span>
         </h1>
         <p className="text-xs text-gray-400 mt-1">Network Security Monitor</p>
       </div>
@@ -44,7 +44,7 @@ const Sidebar = () => {
       <div className="p-4 border-t border-gray-800 text-xs text-gray-400">
         <div className="flex justify-between items-center">
           <span>v1.0.0</span>
-          <span>© 2023</span>
+          <span>© 2025</span>
         </div>
       </div>
     </div>
