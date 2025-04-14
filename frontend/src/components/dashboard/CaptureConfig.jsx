@@ -78,7 +78,7 @@ const CaptureConfig = ({ captureSettings }) => {
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          <span className="mt-2 text-sm text-gray-600">Loading network interfaces...</span>
+          <span className="mt-2 text-sm text-gray-100">Loading network interfaces...</span>
         </div>
       </div>
     );
@@ -87,16 +87,16 @@ const CaptureConfig = ({ captureSettings }) => {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold text-gray-800">Capture Settings</h2>
-        <p className="text-gray-600">Configure packet capture options and network interface settings</p>
+        <h2 className="text-2xl font-bold text-gray-100">Capture Settings</h2>
+        <p className="text-gray-400">Configure packet capture options and network interface settings</p>
       </div>
       
       {/* Status Message */}
       {message.text && (
         <div className={`p-4 rounded-lg border ${
           message.type === 'success' 
-            ? 'bg-green-50 border-green-200 text-green-700' 
-            : 'bg-red-50 border-red-200 text-red-700'
+            ? 'bg-green-200 border-green-400 text-green-700' 
+            : 'bg-red-200 border-red-400 text-red-700'
         }`}>
           <div className="flex items-center">
             {message.type === 'success' ? (
@@ -113,17 +113,17 @@ const CaptureConfig = ({ captureSettings }) => {
         </div>
       )}
       
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+      <div className="bg-gray-700 p-6 rounded-xl shadow-sm border border-gray-600">
         <div className="space-y-6">
           {/* Network Interface */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-200 mb-1">
               Network Interface
             </label>
             <select
               value={settings.interface}
               onChange={(e) => handleChange('interface', e.target.value)}
-              className="block w-full rounded-lg text-gray-950 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+              className="block w-full rounded-lg text-gray-100 bg-gray-800 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
             >
               <option value="">Select Interface</option>
               {availableInterfaces.map((iface) => (
@@ -146,10 +146,10 @@ const CaptureConfig = ({ captureSettings }) => {
               />
             </div>
             <div className="ml-3 text-sm">
-              <label htmlFor="promiscuousMode" className="font-medium text-gray-700">
+              <label htmlFor="promiscuousMode" className="font-medium text-gray-200">
                 Enable promiscuous mode
               </label>
-              <p className="text-gray-500 mt-1">
+              <p className="text-gray-400 mt-1">
                 Capture all packets on the network, not just those addressed to this host
               </p>
             </div>
@@ -157,7 +157,7 @@ const CaptureConfig = ({ captureSettings }) => {
           
           {/* Capture Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-200 mb-1">
               BPF Capture Filter
             </label>
             <input
@@ -165,16 +165,16 @@ const CaptureConfig = ({ captureSettings }) => {
               value={settings.captureFilter}
               onChange={(e) => handleChange('captureFilter', e.target.value)}
               placeholder="e.g., tcp port 80 or udp port 53"
-              className="block w-full rounded-lg text-gray-950 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 font-mono text-sm transition duration-150"
+              className="block w-full rounded-lg bg-gray-800 text-gray-200 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 font-mono text-sm transition duration-150"
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-400">
               Berkeley Packet Filter syntax for filtering captured packets
             </p>
           </div>
           
           {/* Packet Buffer Size */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-200 mb-1">
               Packet Buffer Size (KB)
             </label>
             <div className="relative rounded-md shadow-sm">
@@ -184,20 +184,20 @@ const CaptureConfig = ({ captureSettings }) => {
                 max="1048576"
                 value={settings.packetBuffer}
                 onChange={(e) => handleChange('packetBuffer', parseInt(e.target.value, 10))}
-                className="block w-full rounded-lg text-gray-950 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                className="block w-full rounded-lg bg-gray-800 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
               />
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span className="text-gray-500 sm:text-sm">KB</span>
+                <span className="text-gray-200 sm:text-sm">KB</span>
               </div>
             </div>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-400">
               Memory allocated for packet buffering (higher values reduce packet loss)
             </p>
           </div>
           
           {/* Max Capture Size */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-200 mb-1">
               Max Capture Size
             </label>
             <div className="relative rounded-md shadow-sm">
@@ -207,13 +207,13 @@ const CaptureConfig = ({ captureSettings }) => {
                 max="65535"
                 value={settings.maxCapSize}
                 onChange={(e) => handleChange('maxCapSize', parseInt(e.target.value, 10))}
-                className="block w-full rounded-lg text-gray-950 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                className="block w-full rounded-lg bg-gray-800 text-gray-200 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
               />
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span className="text-gray-500 sm:text-sm">bytes</span>
+                <span className="text-gray-200 sm:text-sm">bytes</span>
               </div>
             </div>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-400">
               Maximum number of bytes to capture from each packet (65535 for full packets)
             </p>
           </div>
@@ -221,7 +221,7 @@ const CaptureConfig = ({ captureSettings }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* PCAP Rotation Size */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-200 mb-1">
                 PCAP Rotation Size
               </label>
               <div className="relative rounded-md shadow-sm">
@@ -231,20 +231,20 @@ const CaptureConfig = ({ captureSettings }) => {
                   max="10000"
                   value={settings.rotationSize}
                   onChange={(e) => handleChange('rotationSize', parseInt(e.target.value, 10))}
-                  className="block w-full rounded-lg text-gray-950 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                  className="block w-full rounded-lg bg-gray-800 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
                 />
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <span className="text-gray-500 sm:text-sm">MB</span>
+                  <span className="text-gray-200 sm:text-sm">MB</span>
                 </div>
               </div>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-400">
                 Create new PCAP file when current file reaches this size
               </p>
             </div>
             
             {/* PCAP Rotation Time */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-200 mb-1">
                 PCAP Rotation Time
               </label>
               <div className="relative rounded-md shadow-sm">
@@ -254,13 +254,13 @@ const CaptureConfig = ({ captureSettings }) => {
                   max="86400"
                   value={settings.rotationTime}
                   onChange={(e) => handleChange('rotationTime', parseInt(e.target.value, 10))}
-                  className="block w-full rounded-lg text-gray-950 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                  className="block w-full rounded-lg bg-gray-800 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
                 />
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <span className="text-gray-500 sm:text-sm">seconds</span>
+                  <span className="text-gray-200 sm:text-sm">seconds</span>
                 </div>
               </div>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-400">
                 Create new PCAP file after this time period
               </p>
             </div>
@@ -278,10 +278,10 @@ const CaptureConfig = ({ captureSettings }) => {
               />
             </div>
             <div className="ml-3 text-sm">
-              <label htmlFor="autoStart" className="font-medium text-gray-700">
+              <label htmlFor="autoStart" className="font-medium text-gray-200">
                 Automatically start capture
               </label>
-              <p className="text-gray-500 mt-1">
+              <p className="text-gray-400 mt-1">
                 Begin packet capture immediately when the application launches
               </p>
             </div>
@@ -294,7 +294,7 @@ const CaptureConfig = ({ captureSettings }) => {
             disabled={saving || !settings.interface}
             className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm ${
               saving || !settings.interface
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ? 'bg-gray-800 text-gray-100 cursor-not-allowed'
                 : 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
             } transition duration-150`}
           >

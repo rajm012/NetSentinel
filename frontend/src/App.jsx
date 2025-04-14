@@ -11,11 +11,16 @@ import ThreatIntelView from "../src/views/dashboard/ThreatIntelView";
 import ConfigurationView from "../src/views/dashboard/ConfigView";
 import TestbedView from "../src/views/dashboard/TestbedView";
 import PacketDetailView from "../src/views/dashboard/PacketDetailView";
-
+import Header from "./components/layouts/Header";
+import Footer from "./components/layouts/Footer";
+import ProfileView from "../src/views/dashboard/ProfileView";
+import SettingsView from "../src/views/dashboard/SettingsView";
+import DocumentationPage from "../src/views/dashboard/DocumentationPage";
 
 function App() {
   return (
     <Router>
+      <Header /> {/* Add Header component */}
       <Routes>
       {/* -----------------------Home page routes------------------------------------ */}
         <Route path="/" element={<HomePage />} />
@@ -30,8 +35,12 @@ function App() {
       <Route path="config" element={<ConfigurationView />} />
       <Route path="testbed" element={<TestbedView />} />
       <Route path="upload-logs" element={<PacketDetailView />} />
+      <Route path="profile" element={<ProfileView />} />
+      <Route path="settings" element={<SettingsView />} />
+      <Route path="docs" element={<DocumentationPage />} />
       </Route>
       </Routes>
+      <Footer /> {/* Add Footer component */}
     </Router>
   );
 }

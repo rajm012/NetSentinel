@@ -41,15 +41,15 @@ const ThresholdConfig = ({ thresholds }) => {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold text-gray-800">Detection Thresholds</h2>
-        <p className="text-gray-600">Adjust threshold values to control sensitivity of threat detection</p>
+        <h2 className="text-2xl font-bold text-gray-200">Detection Thresholds</h2>
+        <p className="text-gray-400">Adjust threshold values to control sensitivity of threat detection</p>
       </div>
       
       {message.text && (
         <div className={`p-4 rounded-lg border ${
           message.type === 'success' 
-            ? 'bg-green-50 border-green-200 text-green-700' 
-            : 'bg-red-50 border-red-200 text-red-700'
+            ? 'bg-green-200 border-green-400 text-green-700' 
+            : 'bg-red-200 border-red-400 text-red-700'
         }`}>
           <div className="flex items-center">
             {message.type === 'success' ? (
@@ -68,13 +68,13 @@ const ThresholdConfig = ({ thresholds }) => {
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {Object.entries(values).map(([key, value]) => (
-          <div key={key} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+          <div key={key} className="bg-gray-700 p-5 rounded-xl shadow-sm border border-gray-600 hover:shadow-md transition-shadow duration-200">
             <div className="flex flex-col h-full">
               <div className="mb-3">
-                <h3 className="font-medium text-gray-800 text-lg capitalize">
+                <h3 className="font-medium text-gray-200 text-lg capitalize">
                   {key.replace(/_/g, ' ')}
                 </h3>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-400 mt-1">
                   {getThresholdDescription(key)}
                 </p>
               </div>
@@ -88,7 +88,7 @@ const ThresholdConfig = ({ thresholds }) => {
                       min="0"
                       value={value}
                       onChange={(e) => handleChange(key, e.target.value)}
-                      className="block w-full rounded-lg text-gray-700 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                      className="block w-full rounded-lg text-gray-950 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
                     />
                   </div>
                   <button

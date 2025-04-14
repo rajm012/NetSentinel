@@ -123,8 +123,8 @@ const AlertConfig = ({ alertSettings }) => {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold text-gray-800">Alert Configuration</h2>
-        <p className="text-gray-600">Configure how you want to be notified about detected threats</p>
+        <h2 className="text-2xl font-bold text-gray-100">Alert Configuration</h2>
+        <p className="text-gray-400">Configure how you want to be notified about detected threats</p>
       </div>
       
       {/* Status Messages */}
@@ -132,8 +132,8 @@ const AlertConfig = ({ alertSettings }) => {
         {message.text && (
           <div className={`p-4 rounded-lg border ${
             message.type === 'success' 
-              ? 'bg-green-50 border-green-200 text-green-700' 
-              : 'bg-red-50 border-red-200 text-red-700'
+              ? 'bg-green-200 border-green-400 text-green-700' 
+              : 'bg-red-200 border-red-400 text-red-700'
           }`}>
             <div className="flex items-center">
               {message.type === 'success' ? (
@@ -153,10 +153,10 @@ const AlertConfig = ({ alertSettings }) => {
         {testResult.message && (
           <div className={`p-4 rounded-lg border ${
             testResult.type === 'success' 
-              ? 'bg-green-50 border-green-200 text-green-700' 
+              ? 'bg-green-200 border-green-400 text-green-700' 
               : testResult.type === 'error' 
-                ? 'bg-red-50 border-red-200 text-red-700' 
-                : 'bg-blue-50 border-blue-200 text-blue-700'
+                ? 'bg-red-200 border-red-400 text-red-700' 
+                : 'bg-blue-200 border-blue-400 text-blue-700'
           }`}>
             <div className="flex items-center">
               {testResult.type === 'success' ? (
@@ -179,33 +179,33 @@ const AlertConfig = ({ alertSettings }) => {
       </div>
       
       {/* General Settings Card */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">General Settings</h3>
+      <div className="bg-gray-700 p-6 rounded-xl shadow-sm border border-gray-600">
+        <h3 className="text-lg font-semibold text-gray-200 mb-4 pb-2 border-b border-gray-600">General Settings</h3>
         
         <div className="space-y-5">
           {/* Minimum Alert Severity */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Minimum Alert Severity
             </label>
             <select
               value={settings.minSeverity}
               onChange={(e) => handleChange('minSeverity', e.target.value)}
-              className="block w-full rounded-lg text-gray-950 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+              className="block w-full rounded-lg bg-gray-800 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
             >
               <option value="low">Low (All alerts)</option>
               <option value="medium">Medium</option>
               <option value="high">High</option>
               <option value="critical">Critical only</option>
             </select>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-400">
               Only alerts with this severity level or higher will trigger notifications
             </p>
           </div>
           
           {/* Alert Throttling */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Alert Throttling (seconds)
             </label>
             <input
@@ -214,9 +214,9 @@ const AlertConfig = ({ alertSettings }) => {
               max="3600"
               value={settings.throttleTime}
               onChange={(e) => handleChange('throttleTime', parseInt(e.target.value, 10))}
-              className="block w-full rounded-lg text-gray-950 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+              className="block w-full rounded-lg bg-gray-800 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-400">
               Minimum time between repeated alerts of the same type (0 to disable throttling)
             </p>
           </div>
@@ -230,7 +230,7 @@ const AlertConfig = ({ alertSettings }) => {
               onChange={(e) => handleChange('enableDesktopNotifications', e.target.checked)}
               className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
-            <label htmlFor="enableDesktopNotifications" className="ml-2 block text-sm text-gray-700">
+            <label htmlFor="enableDesktopNotifications" className="ml-2 block text-sm text-gray-200">
               Enable desktop notifications
             </label>
           </div>
@@ -238,8 +238,8 @@ const AlertConfig = ({ alertSettings }) => {
       </div>
       
       {/* Email Alerts Card */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <div className="flex items-center mb-4 pb-2 border-b border-gray-100">
+      <div className="bg-gray-700 p-6 rounded-xl shadow-sm border border-gray-600">
+        <div className="flex items-center mb-4 pb-2 border-b border-gray-600">
           <input
             id="enableEmail"
             type="checkbox"
@@ -247,7 +247,7 @@ const AlertConfig = ({ alertSettings }) => {
             onChange={(e) => handleChange('enableEmail', e.target.checked)}
             className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
-          <label htmlFor="enableEmail" className="ml-2 text-lg font-semibold text-gray-800">
+          <label htmlFor="enableEmail" className="ml-2 text-lg font-semibold text-gray-200">
             Email Alerts
           </label>
         </div>
@@ -255,7 +255,7 @@ const AlertConfig = ({ alertSettings }) => {
         {settings.enableEmail && (
           <div className="mt-4 space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Email Recipients
               </label>
               <input
@@ -263,16 +263,16 @@ const AlertConfig = ({ alertSettings }) => {
                 value={settings.emailRecipients}
                 onChange={(e) => handleChange('emailRecipients', e.target.value)}
                 placeholder="email1@example.com, email2@example.com"
-                className="block w-full rounded-lg text-black border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                className="block w-full rounded-lg bg-gray-800 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-400">
                 Comma-separated list of email addresses
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   SMTP Server
                 </label>
                 <input
@@ -280,57 +280,57 @@ const AlertConfig = ({ alertSettings }) => {
                   value={settings.emailServer}
                   onChange={(e) => handleChange('emailServer', e.target.value)}
                   placeholder="smtp.example.com"
-                  className="block w-full rounded-lg text-black border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                  className="block w-full rounded-lg bg-gray-800 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   SMTP Port
                 </label>
                 <input
                   type="number"
                   value={settings.emailPort}
                   onChange={(e) => handleChange('emailPort', parseInt(e.target.value, 10))}
-                  className="block w-full rounded-lg text-black border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                  className="block w-full rounded-lg  bg-gray-800 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
                 />
               </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   SMTP Username
                 </label>
                 <input
                   type="text"
                   value={settings.emailUsername}
                   onChange={(e) => handleChange('emailUsername', e.target.value)}
-                  className="block w-full rounded-lg text-black border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                  className="block w-full rounded-lg t bg-gray-800 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   SMTP Password
                 </label>
                 <input
                   type="password"
                   value={settings.emailPassword}
                   onChange={(e) => handleChange('emailPassword', e.target.value)}
-                  className="block w-full rounded-lg text-black border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                  className="block w-full rounded-lg  bg-gray-800 text-gray-100 border-gray-600shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
                 />
               </div>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Connection Security
               </label>
               <select
                 value={settings.emailSecurity}
                 onChange={(e) => handleChange('emailSecurity', e.target.value)}
-                className="block w-full rounded-lg bg-white text-black border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                className="block w-full rounded-lg  bg-gray-800 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
               >
                 <option value="none">None</option>
                 <option value="ssl">SSL</option>
@@ -373,8 +373,8 @@ const AlertConfig = ({ alertSettings }) => {
       </div>
       
       {/* Webhook Alerts Card */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <div className="flex items-center mb-4 pb-2 border-b border-gray-100">
+      <div className="bg-gray-700 p-6 rounded-xl shadow-sm border border-gray-600">
+        <div className="flex items-center mb-4 pb-2 border-b border-gray-600">
           <input
             id="enableWebhook"
             type="checkbox"
@@ -382,7 +382,7 @@ const AlertConfig = ({ alertSettings }) => {
             onChange={(e) => handleChange('enableWebhook', e.target.checked)}
             className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
-          <label htmlFor="enableWebhook" className="ml-2 text-lg font-semibold text-gray-800">
+          <label htmlFor="enableWebhook" className="ml-2 text-lg font-semibold text-gray-200">
             Webhook Alerts
           </label>
         </div>
@@ -390,7 +390,7 @@ const AlertConfig = ({ alertSettings }) => {
         {settings.enableWebhook && (
           <div className="mt-4 space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Webhook URL
               </label>
               <input
@@ -398,12 +398,12 @@ const AlertConfig = ({ alertSettings }) => {
                 value={settings.webhookUrl}
                 onChange={(e) => handleChange('webhookUrl', e.target.value)}
                 placeholder="https://example.com/webhook"
-                className="block w-full rounded-lg text-black border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                className="block w-full rounded-lg  bg-gray-800 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Custom Headers (JSON)
               </label>
               <textarea
@@ -411,9 +411,9 @@ const AlertConfig = ({ alertSettings }) => {
                 onChange={(e) => handleChange('webhookHeaders', e.target.value)}
                 placeholder={'{\n  "Authorization": "Bearer token",\n  "Content-Type": "application/json"\n}'}
                 rows={4}
-                className="block w-full rounded-lg text-black border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 font-mono text-sm transition duration-150"
+                className="block w-full rounded-lg  bg-gray-800 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 font-mono text-sm transition duration-150"
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-400">
                 Optional HTTP headers in JSON format
               </p>
             </div>

@@ -72,22 +72,15 @@ const DocumentationPage = () => {
                 <div className="bg-gray-800 p-4 rounded mb-4 border border-gray-700">
                   <pre className="text-green-400 font-mono text-sm">
                     <code>
-                      # Clone the repository
-                      <br/>
+                      # Clone the repository\n
                       git clone https://github.com/your-repo/packetsniffer.git\n
-                      <br/>
-                      <br/>
-                      # Install dependencies
-                      <br/>
-                      cd packetsniffer
-                      <br/>
-                      npm install
-                      <br/>
-                      <br/>
-                      # Start the application
-                      <br/>
-                      npm run dev
-                      <br/>
+                      \n
+                      # Install dependencies\n
+                      cd packetsniffer\n
+                      npm install\n
+                      \n
+                      # Start the application\n
+                      npm start
                     </code>
                   </pre>
                 </div>
@@ -188,20 +181,14 @@ const DocumentationPage = () => {
                 <div className="bg-gray-800 p-4 rounded mb-4 border border-gray-700">
                   <pre className="text-green-400 font-mono text-sm">
                     <code>
-                      // Find all HTTP requests to specific host
-                      <br />
+                      // Find all HTTP requests to specific host\n
                       protocol:http AND destination:example.com\n
-                      <br />
-                      <br />
-                      // Find failed login attempts
-                      <br />
-                      event_type:auth_failure
-                      <br />
-                      <br />
-                      // Find traffic from suspicious IP ranges
-                      <br />
+                      \n
+                      // Find failed login attempts\n
+                      event_type:auth_failure\n
+                      \n
+                      // Find traffic from suspicious IP ranges\n
                       src_ip:192.168.1.100-192.168.1.200 AND threat_score:{'>'}70
-                      <br />
                     </code>
                   </pre>
                 </div>
@@ -436,9 +423,7 @@ const DocumentationPage = () => {
                 <div className="bg-gray-800 p-4 rounded mb-4 border border-gray-700">
                   <pre className="text-green-400 font-mono text-sm">
                     <code>
-                      # Include API key in headers
-                      <br />
-                      <br />
+                      # Include API key in headers\n
                       curl -H "Authorization: Bearer YOUR_API_KEY" https://your-instance/api/v1/...
                     </code>
                   </pre>

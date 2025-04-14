@@ -74,7 +74,7 @@ const ConfigurationView = () => {
   if (error) {
     return (
       <div className="max-w-4xl mx-auto p-6">
-        <div className="bg-red-50 border border-red-200 text-red-700 p-6 rounded-xl">
+        <div className="bg-red-20 border border-red-400 text-red-700 p-6 rounded-xl">
           <div className="flex items-start">
             <svg className="w-6 h-6 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
@@ -101,13 +101,13 @@ const ConfigurationView = () => {
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Configuration Panel</h1>
+        <h1 className="text-3xl font-bold text-gray-700">Configuration Panel</h1>
         <p className="text-gray-600 mt-2">
           Configure system settings, detection thresholds, and alerting preferences
         </p>
       </div>
       
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-gray-800 rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <Tabs activeTab={activeTab} onChange={handleTabChange}>
           <Tab id="thresholds" label="Detection Thresholds">
             <div className="p-6">

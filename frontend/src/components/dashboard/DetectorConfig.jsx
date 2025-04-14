@@ -128,15 +128,15 @@ const DetectorConfig = ({ detectors }) => {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold text-gray-800">Detector Configuration</h2>
-        <p className="text-gray-600">Configure individual detectors and their rules</p>
+        <h2 className="text-2xl font-bold text-gray-100">Detector Configuration</h2>
+        <p className="text-gray-400">Configure individual detectors and their rules</p>
       </div>
       
       {message.text && (
         <div className={`p-4 rounded-lg border ${
           message.type === 'success' 
-            ? 'bg-green-50 border-green-200 text-green-700' 
-            : 'bg-red-50 border-red-200 text-red-700'
+            ? 'bg-green-200 border-green-400 text-green-700' 
+            : 'bg-red-30 border-red-400 text-red-700'
         }`}>
           <div className="flex items-center">
             {message.type === 'success' ? (
@@ -156,16 +156,16 @@ const DetectorConfig = ({ detectors }) => {
       <div className="flex flex-col md:flex-row gap-6">
         {/* Detector List */}
         <div className="w-full md:w-1/3">
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-            <h3 className="font-medium text-lg mb-4 text-gray-800">Available Detectors</h3>
+          <div className="bg-gray-700 p-4 rounded-xl shadow-sm border border-gray-600">
+            <h3 className="font-medium text-lg mb-4 text-gray-200">Available Detectors</h3>
             <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
               {detectors.map((detector) => (
                 <button
                   key={detector}
                   className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                     selectedDetector === detector
-                      ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-500 font-medium'
-                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+                      ? 'bg-gray-900 text-blue-700 border-l-4 border-blue-600 font-medium'
+                      : 'bg-gray-800 hover:bg-gray-700 text-blue-400'
                   }`}
                   onClick={() => setSelectedDetector(detector)}
                 >
@@ -179,7 +179,7 @@ const DetectorConfig = ({ detectors }) => {
         
         {/* Detector Configuration */}
         <div className="w-full md:w-2/3">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <div className="bg-gray-700 p-6 rounded-xl shadow-sm border border-gray-600">
             {loading ? (
               <div className="flex justify-center items-center min-h-[200px]">
                 <div className="flex flex-col items-center">
@@ -187,7 +187,7 @@ const DetectorConfig = ({ detectors }) => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <span className="mt-2 text-sm text-gray-600">Loading detector configuration...</span>
+                  <span className="mt-2 text-sm text-gray-300">Loading detector configuration...</span>
                 </div>
               </div>
             ) : error ? (
@@ -202,12 +202,12 @@ const DetectorConfig = ({ detectors }) => {
             ) : ruleConfig ? (
               <div>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b border-gray-100">
-                  <h3 className="font-medium text-xl text-gray-800 capitalize mb-2 sm:mb-0">
+                  <h3 className="font-medium text-xl text-gray-200 capitalize mb-2 sm:mb-0">
                     {selectedDetector.replace(/_/g, ' ')}
                   </h3>
                   
                   <div className="flex items-center">
-                    <span className="mr-2 text-sm text-gray-600">Detector Status:</span>
+                    <span className="mr-2 text-sm text-gray-300">Detector Status:</span>
                     <button
                       onClick={() => handleToggleDetector(!(ruleConfig.content[Object.keys(ruleConfig.content)[0]]?.enabled))}
                       disabled={saving}
@@ -225,7 +225,7 @@ const DetectorConfig = ({ detectors }) => {
                         }`} 
                       />
                     </button>
-                    <span className="ml-2 text-sm font-medium text-gray-700">
+                    <span className="ml-2 text-sm font-medium text-gray-200">
                       {ruleConfig.content[Object.keys(ruleConfig.content)[0]]?.enabled ? 'Enabled' : 'Disabled'}
                     </span>
                   </div>
@@ -238,14 +238,14 @@ const DetectorConfig = ({ detectors }) => {
                       
                       return (
                         <div key={key} className="relative">
-                          <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
+                          <label className="block text-sm font-medium text-gray-200 mb-1 capitalize">
                             {key.replace(/_/g, ' ')}
                           </label>
                           <input
                             type={typeof value === 'number' ? 'number' : 'text'}
                             value={value}
                             onChange={(e) => handleChange(key, e.target.value)}
-                            className="block w-full rounded-lg text-gray-950 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                            className="block w-full rounded-lg text-gray-100 bg-gray-800 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
                           />
                         </div>
                       );
@@ -283,7 +283,7 @@ const DetectorConfig = ({ detectors }) => {
                 )}
               </div>
             ) : (
-              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">
+              <div className="p-4 bg-gray-700 rounded-lg border border-gray-600 text-gray-200">
                 <div className="flex items-center">
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />

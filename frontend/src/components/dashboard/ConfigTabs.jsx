@@ -15,7 +15,7 @@ export const Tabs = ({ children, activeTab, onChange }) => {
                 className={`py-4 px-6 font-medium text-sm border-b-2 ${
                   isActive
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-200 hover:text-gray-100 hover:border-gray-600'
                 }`}
                 onClick={() => onChange(child.props.id)}
               >

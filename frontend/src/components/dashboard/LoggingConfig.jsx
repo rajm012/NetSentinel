@@ -55,17 +55,17 @@ const LoggingConfig = ({ loggingSettings }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
+    <div className="max-w-4xl mx-auto p-6 space-y-6 bg-gray-950 text-gray-100">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold text-gray-800">Logging Settings</h2>
-        <p className="text-gray-600">Configure how the application logs events and packets</p>
+        <h2 className="text-2xl font-bold text-blue-400">Logging Settings</h2>
+        <p className="text-gray-400">Configure how the application logs events and packets</p>
       </div>
       
       {message.text && (
         <div className={`p-4 rounded-lg border ${
           message.type === 'success' 
-            ? 'bg-green-50 border-green-200 text-green-700' 
-            : 'bg-red-50 border-red-200 text-red-700'
+            ? 'bg-green-900/30 border-green-700 text-green-300' 
+            : 'bg-red-900/30 border-red-700 text-red-300'
         }`}>
           <div className="flex items-center">
             {message.type === 'success' ? (
@@ -83,24 +83,24 @@ const LoggingConfig = ({ loggingSettings }) => {
       )}
       
       {/* Application Logging Card */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Application Logging</h3>
+      <div className="bg-gray-900 p-6 rounded-xl border border-gray-800">
+        <h3 className="text-lg font-semibold text-blue-400 mb-4 pb-2 border-b border-gray-800">Application Logging</h3>
         
         <div className="space-y-5">
           {/* Log Directory */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Log Directory
             </label>
             <div className="mt-1 flex rounded-md shadow-sm">
-              <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+              <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-700 bg-gray-800 text-gray-400 text-sm">
                 Path:
               </span>
               <input
                 type="text"
                 value={settings.logDir}
                 onChange={(e) => handleChange('logDir', e.target.value)}
-                className="focus:ring-blue-500 text-gray-600 focus:border-blue-500 flex-1 block w-full rounded-none rounded-r-md border-gray-300"
+                className="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-none rounded-r-md bg-gray-800 border-gray-700 text-gray-200"
               />
             </div>
           </div>
@@ -108,13 +108,13 @@ const LoggingConfig = ({ loggingSettings }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Log Level */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Log Level
               </label>
               <select
                 value={settings.logLevel}
                 onChange={(e) => handleChange('logLevel', e.target.value)}
-                className="block w-full rounded-lg text-gray-600 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                className="block w-full rounded-lg bg-gray-800 border-gray-700 text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
                 <option value="error">Error</option>
                 <option value="warn">Warning</option>
@@ -126,13 +126,13 @@ const LoggingConfig = ({ loggingSettings }) => {
             
             {/* Log Format */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Log Format
               </label>
               <select
                 value={settings.logFormat}
                 onChange={(e) => handleChange('logFormat', e.target.value)}
-                className="block w-full rounded-lg text-gray-600 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                className="block w-full rounded-lg bg-gray-800 border-gray-700 text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
                 <option value="json">JSON</option>
                 <option value="text">Plain Text</option>
@@ -149,11 +149,11 @@ const LoggingConfig = ({ loggingSettings }) => {
                 type="checkbox"
                 checked={settings.logRotation}
                 onChange={(e) => handleChange('logRotation', e.target.checked)}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="h-4 w-4 text-blue-600 border-gray-600 rounded focus:ring-blue-500 bg-gray-800"
               />
             </div>
             <div className="ml-3 text-sm">
-              <label htmlFor="logRotation" className="font-medium text-gray-700">
+              <label htmlFor="logRotation" className="font-medium text-gray-300">
                 Enable log rotation
               </label>
             </div>
@@ -163,7 +163,7 @@ const LoggingConfig = ({ loggingSettings }) => {
           {settings.logRotation && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pl-8">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Max Log Size
                 </label>
                 <div className="relative rounded-md shadow-sm">
@@ -173,16 +173,16 @@ const LoggingConfig = ({ loggingSettings }) => {
                     max="1000"
                     value={settings.logMaxSize}
                     onChange={(e) => handleChange('logMaxSize', parseInt(e.target.value, 10))}
-                    className="block w-full rounded-lg text-gray-600 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                    className="block w-full rounded-lg bg-gray-800 border-gray-700 text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 sm:text-sm">MB</span>
+                    <span className="text-gray-400 sm:text-sm">MB</span>
                   </div>
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Max Log Files
                 </label>
                 <input
@@ -191,7 +191,7 @@ const LoggingConfig = ({ loggingSettings }) => {
                   max="100"
                   value={settings.logMaxFiles}
                   onChange={(e) => handleChange('logMaxFiles', parseInt(e.target.value, 10))}
-                  className="block w-full rounded-lg text-gray-600 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                  className="block w-full rounded-lg bg-gray-800 border-gray-700 text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -205,11 +205,11 @@ const LoggingConfig = ({ loggingSettings }) => {
                 type="checkbox"
                 checked={settings.enableConsole}
                 onChange={(e) => handleChange('enableConsole', e.target.checked)}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="h-4 w-4 text-blue-600 border-gray-600 rounded focus:ring-blue-500 bg-gray-800"
               />
             </div>
             <div className="ml-3 text-sm">
-              <label htmlFor="enableConsole" className="font-medium text-gray-700">
+              <label htmlFor="enableConsole" className="font-medium text-gray-300">
                 Enable console output
               </label>
               <p className="text-gray-500 mt-1">
@@ -221,16 +221,16 @@ const LoggingConfig = ({ loggingSettings }) => {
       </div>
       
       {/* Syslog Configuration Card */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+      <div className="bg-gray-900 p-6 rounded-xl border border-gray-800">
         <div className="flex items-center mb-4">
           <input
             id="enableSyslog"
             type="checkbox"
             checked={settings.enableSyslog}
             onChange={(e) => handleChange('enableSyslog', e.target.checked)}
-            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            className="h-4 w-4 text-blue-600 border-gray-600 rounded focus:ring-blue-500 bg-gray-800"
           />
-          <label htmlFor="enableSyslog" className="ml-2 text-lg font-semibold text-gray-800">
+          <label htmlFor="enableSyslog" className="ml-2 text-lg font-semibold text-blue-400">
             Syslog Integration
           </label>
         </div>
@@ -239,19 +239,19 @@ const LoggingConfig = ({ loggingSettings }) => {
           <div className="mt-4 space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Syslog Host
                 </label>
                 <input
                   type="text"
                   value={settings.syslogHost}
                   onChange={(e) => handleChange('syslogHost', e.target.value)}
-                  className="block w-full rounded-lg text-gray-600 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                  className="block w-full rounded-lg bg-gray-800 border-gray-700 text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Syslog Port
                 </label>
                 <input
@@ -260,19 +260,19 @@ const LoggingConfig = ({ loggingSettings }) => {
                   max="65535"
                   value={settings.syslogPort}
                   onChange={(e) => handleChange('syslogPort', parseInt(e.target.value, 10))}
-                  className="block w-full rounded-lg text-gray-600 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                  className="block w-full rounded-lg bg-gray-800 border-gray-700 text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Syslog Protocol
               </label>
               <select
                 value={settings.syslogProtocol}
                 onChange={(e) => handleChange('syslogProtocol', e.target.value)}
-                className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150"
+                className="block w-full rounded-lg bg-gray-800 border-gray-700 text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
                 <option value="udp">UDP</option>
                 <option value="tcp">TCP</option>
@@ -283,8 +283,8 @@ const LoggingConfig = ({ loggingSettings }) => {
       </div>
       
       {/* PCAP Logging Card */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Packet Capture Logging</h3>
+      <div className="bg-gray-900 p-6 rounded-xl border border-gray-800">
+        <h3 className="text-lg font-semibold text-blue-400 mb-4 pb-2 border-b border-gray-800">Packet Capture Logging</h3>
         
         <div className="space-y-5">
           {/* PCAP Logging */}
@@ -295,11 +295,11 @@ const LoggingConfig = ({ loggingSettings }) => {
                 type="checkbox"
                 checked={settings.enablePcapLogging}
                 onChange={(e) => handleChange('enablePcapLogging', e.target.checked)}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="h-4 w-4 text-blue-600 border-gray-600 rounded focus:ring-blue-500 bg-gray-800"
               />
             </div>
             <div className="ml-3 text-sm">
-              <label htmlFor="enablePcapLogging" className="font-medium text-gray-700">
+              <label htmlFor="enablePcapLogging" className="font-medium text-gray-300">
                 Save packet captures (PCAP files)
               </label>
             </div>
@@ -307,18 +307,18 @@ const LoggingConfig = ({ loggingSettings }) => {
           
           {settings.enablePcapLogging && (
             <div className="pl-8">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 PCAP Directory
               </label>
               <div className="mt-1 flex rounded-md shadow-sm">
-                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-700 bg-gray-800 text-gray-400 text-sm">
                   Path:
                 </span>
                 <input
                   type="text"
                   value={settings.pcapDir}
                   onChange={(e) => handleChange('pcapDir', e.target.value)}
-                  className="focus:ring-blue-500 text-gray-600 focus:border-blue-500 flex-1 block w-full rounded-none rounded-r-md border-gray-300"
+                  className="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-none rounded-r-md bg-gray-800 border-gray-700 text-gray-200"
                 />
               </div>
             </div>
@@ -332,11 +332,11 @@ const LoggingConfig = ({ loggingSettings }) => {
                 type="checkbox"
                 checked={settings.enablePacketLogging}
                 onChange={(e) => handleChange('enablePacketLogging', e.target.checked)}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="h-4 w-4 text-blue-600 border-gray-600 rounded focus:ring-blue-500 bg-gray-800"
               />
             </div>
             <div className="ml-3 text-sm">
-              <label htmlFor="enablePacketLogging" className="font-medium text-gray-700">
+              <label htmlFor="enablePacketLogging" className="font-medium text-gray-300">
                 Log individual packet details
               </label>
               <p className="text-gray-500 mt-1">
@@ -354,7 +354,7 @@ const LoggingConfig = ({ loggingSettings }) => {
           disabled={saving}
           className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm ${
             saving
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
               : 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
           } transition duration-150`}
         >
