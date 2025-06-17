@@ -3,7 +3,7 @@
  * Handles communication with the backend for configuration settings
  */
 
-const API_BASE = 'http://localhost:8000/api/config'; // Adjust this to your API base URL
+const API_BASE = 'https://netsentinel-raqp.onrender.com/api/config'; // Adjust this to your API base URL
 
 /**
  * Get all threshold values
