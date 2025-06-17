@@ -1,7 +1,7 @@
 // src/utils/testbedAPI.js
 
 // Base API URL - you can replace this with your actual backend URL
-const API_BASE_URL = 'http://localhost:8000/api/testbed';
+const API_BASE_URL = 'https://netsentinel-raqp.onrender.com/api/testbed';
 
 /**
  * Upload a PCAP file for analysis
@@ -15,7 +15,7 @@ export const uploadPcap = async (file) => {
     formData.append('file', file);
   
     try {
-      const response = await fetch('http://localhost:8000/api/testbed/upload', {
+      const response = await fetch('https://netsentinel-raqp.onrender.com/api/testbed/upload', {
         method: 'POST',
         body: formData,
       });
@@ -40,7 +40,7 @@ export const uploadPcap = async (file) => {
  * @returns {Promise<Object>} - Response with job ID
  */
 export async function generateTraffic(config) {
-  const response = await fetch(`http://localhost:8000/api/testbed/generate`, {
+  const response = await fetch(`https://netsentinel-raqp.onrender.com/api/testbed/generate`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export async function generateTraffic(config) {
  * @returns {Promise<Object>} - Test results
  */
 export async function getTestResults(jobId) {
-  const response = await fetch(`http://localhost:8000/api/testbed/results/${jobId}`);
+  const response = await fetch(`https://netsentinel-raqp.onrender.com/api/testbed/results/${jobId}`);
   
   if (!response.ok) {
     const error = await response.json();
@@ -80,7 +80,7 @@ export async function getTestResults(jobId) {
  * @returns {Promise<Object>} - Response with status
  */
 export async function cancelTestJob(jobId) {
-  const response = await fetch(`http://localhost:8000/api/testbed/cancel/${jobId}`, {
+  const response = await fetch(`https://netsentinel-raqp.onrender.com/api/testbed/cancel/${jobId}`, {
     method: 'POST',
   });
   
@@ -105,7 +105,7 @@ export async function downloadResults(jobId, format) {
     try {
       console.log(`Requesting download: ${jobId} format: ${format}`);
       
-      const response = await fetch(`http://localhost:8000/api/testbed/download/${jobId}?format=${format}`, {
+      const response = await fetch(`https://netsentinel-raqp.onrender.com/api/testbed/download/${jobId}?format=${format}`, {
         method: 'GET',
         headers: {
           'Accept': format === 'json' ? 'application/json' : 
