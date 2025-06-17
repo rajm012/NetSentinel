@@ -30,7 +30,7 @@ export default function HistoricalView() {
   });
   const [availableInterfaces, setAvailableInterfaces] = useState([]);
   const [newFilter, setNewFilter] = useState("");
-  const API_BASE = "http://localhost:8000/api";
+  const API_BASE = "https://netsentinel-raqp.onrender.com/api";
 
   const fetchNetworkInterfaces = async () => {
     try {
