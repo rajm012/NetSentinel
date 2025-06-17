@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'https://netsentinel-raqp.onrender.com';
 
 async function handleResponse(response) {
   if (!response.ok) {
